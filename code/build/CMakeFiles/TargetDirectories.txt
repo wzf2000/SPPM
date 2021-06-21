@@ -1,0 +1,6 @@
+/Users/wzf2000/code/local/CG/Project/code/build/CMakeFiles/rebuild_cache.dir
+/Users/wzf2000/code/local/CG/Project/code/build/CMakeFiles/edit_cache.dir
+/Users/wzf2000/code/local/CG/Project/code/build/CMakeFiles/PROJECT.dir
+/Users/wzf2000/code/local/CG/Project/code/build/deps/vecmath/CMakeFiles/rebuild_cache.dir
+/Users/wzf2000/code/local/CG/Project/code/build/deps/vecmath/CMakeFiles/edit_cache.dir
+/Users/wzf2000/code/local/CG/Project/code/build/deps/vecmath/CMakeFiles/vecmath.dir

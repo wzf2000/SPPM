@@ -1,4 +1,4 @@
-#include <cstdio>
+#pragma once
 
 struct intCoord {
 	int x, y;

@@ -4,31 +4,20 @@
 #include <cstring>
 #include <cmath>
 #include <iostream>
+#include <vector>
 
 #include "tile.hpp"
 #include "scene_parser.hpp"
 #include "image.hpp"
-
-struct State {
-    Tile *tiles;
-    int tileCount;
-    int finishedTileCount;
-};
-
-struct Prefs {
-    int numPhotons;
-    unsigned tileWidth;
-    unsigned tileHeight;
-
-    unsigned imageWidth;
-    unsigned imageHeight;
-};
+#include "hit.hpp"
 
 class Renderer {
-    State state;
-    Prefs prefs;
     SceneParser *scene;
+    Camera *camera;
     Image *image;
+    std::vector<Hit> hitPoints;
 public:
+    Renderer(SceneParser *);
     void renderPerTile(Tile);
+    void trace();
 };

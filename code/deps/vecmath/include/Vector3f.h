@@ -1,6 +1,8 @@
 #ifndef VECTOR_3F_H
 #define VECTOR_3F_H
 
+#include <iostream>
+
 class Vector2f;
 
 class Vector3f
@@ -77,6 +79,8 @@ public:
     // at p1, the result is p2.
 	static Vector3f cubicInterpolate( const Vector3f& p0, const Vector3f& p1, const Vector3f& p2, const Vector3f& p3, float t );
 
+	friend std::ostream &operator<<(std::ostream &os, const Vector3f &v);
+
 private:
 
 	float m_elements[ 3 ];
@@ -102,5 +106,7 @@ bool operator != ( const Vector3f& v0, const Vector3f& v1 );
 
 Vector3f min(const Vector3f &a, const Vector3f &b);
 Vector3f max(const Vector3f &a, const Vector3f &b);
+
+std::ostream &operator<<(std::ostream &os, const Vector3f &v);
 
 #endif // VECTOR_3F_H

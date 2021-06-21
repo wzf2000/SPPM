@@ -22,4 +22,4 @@ cd ..
 # Run all testcases. 
 # You can comment some lines to disable the run of specific examples.
 mkdir -p output
-bin/Project testcases/scene.txt output/scene.bmp
+bin/Project testcases/scene.txt output/scene.bmp 50

@@ -326,6 +326,11 @@ Vector3f min(const Vector3f &a, const Vector3f &b) {
 	return Vector3f(std::min(a.x(), b.x()), std::min(a.y(), b.y()), std::min(a.z(), b.z()));
 }
 
-Vector3f max(const Vector3f &a, const Vector3f &b){
+Vector3f max(const Vector3f &a, const Vector3f &b) {
 	return Vector3f(std::max(a.x(), b.x()), std::max(a.y(), b.y()), std::max(a.z(), b.z()));
+}
+
+std::ostream &operator<<(std::ostream &os, const Vector3f &v) {
+	os << '[' << v.x() << ", " << v.y() << ", " << v.z() << ']';
+	return os;
 }

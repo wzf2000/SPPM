@@ -9,6 +9,7 @@
 #include "mesh.hpp"
 
 Renderer::Renderer(SceneParser *scene) : scene(scene), light(1), aperture(1e-3), focus(1.09), kdtree(nullptr) {
+    numPhotons = 2000;
     camera = scene->getCamera();
     image = new Image(camera->getWidth(), camera->getHeight());
     for (int i = 0; i < image->Width(); ++i)
@@ -32,10 +33,11 @@ void Renderer::render(int numRounds, std::string output) {
     for (int i = 0; i < numRounds; ++i) {
         fprintf(stderr, "Round %d/%d:\n", i + 1, numRounds);
         renderPerTile((Tile){(intCoord){0, 0}, (intCoord){image->Height(), image->Width()}});
-        if ((i + 1) % 100 == 0) {
+        if ((i + 1) % 10 == 0) {
             evaluateRadiance(i + 1);
             char filename[100];
-            sprintf(filename, "checkpoints/checkpoint-%d.ppm", i + 1);
+            sprintf(filename, "checkpoints/checkpoint-%d.bmp", i + 1);
+            fprintf(stderr, "\n%s\n", filename);
             image->SaveImage(filename);
         }
     }
@@ -44,7 +46,7 @@ void Renderer::render(int numRounds, std::string output) {
 
 void Renderer::renderPerTile(Tile tile) {
     Triangle triangle(Vector3f(0, 0, camera->center.z() + focus), Vector3f(0, 1, camera->center.z() + focus), Vector3f(1, 0, camera->center.z() + focus), nullptr);
-    for (int y = tile.end.y - 1; y >= tile.begin.y; --y) {
+    for (int y = tile.begin.y; y < tile.end.y; ++y) {
         for (int x = tile.begin.x; x < tile.end.x; ++x) {
             fprintf(stderr, "\rRay tracing pass %.3lf%%", y * 100. / image->Width());
             Ray camRay = camera->generateRay(Vector2f(x, y));
@@ -73,6 +75,8 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
     Hit hit;
     bool flag = group->intersect(ray, hit, 0);
     Vector3f p = ray.getOrigin() + ray.getDirection() * hit.getT();
+    std::cerr << ray << std::endl;
+    if (!hit.getMaterial() || !hp && hit.getT() < 1e-3) return;
     double s = BRDFs[hit.getMaterial()->brdf].specular + BRDFs[hit.getMaterial()->brdf].diffuse + BRDFs[hit.getMaterial()->brdf].refraction;
     double action = s * Math::random(0, 1);
     Vector3f dr = ray.getDirection() - hit.getNormal() * (2 * Vector3f::dot(ray.getDirection(), hit.getNormal()));

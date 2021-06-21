@@ -45,19 +45,25 @@ void Renderer::render(int numRounds, std::string output) {
 
 void Renderer::renderPerTile(Tile tile) {
     Triangle triangle(Vector3f(0, 0, camera->center.z() + focus), Vector3f(0, 1, camera->center.z() + focus), Vector3f(1, 0, camera->center.z() + focus), nullptr);
+    clock_t cnt = 0;
+    clock_t now = clock();
     for (int y = tile.begin.y; y < tile.end.y; ++y) {
         #pragma omp parallel for schedule(dynamic, 60), num_threads(8)
         for (int x = tile.begin.x; x < tile.end.x; ++x) {
             fprintf(stderr, "\rRay tracing pass %.3lf%%", y * 100. / image->Width());
-            Ray camRay = camera->generateRay(Vector2f(x, y));
+            Ray camRay = camera->generateRay(Vector2f(y, x));
             double t = triangle.intersectPlane(camRay);
             Vector3f focusP = camRay.getOrigin() + camRay.getDirection() * t;
             double theta = Math::random(0, 2 * M_PI);
             Ray ray(camRay.getOrigin() + Vector3f(cos(theta), sin(theta), 0) * aperture, (focusP - camRay.getOrigin()).normalized());
             hitPoints[y * image->Height() + x]->valid = false;
             hitPoints[y * image->Height() + x]->dir = -1 * camRay.getDirection();
+            clock_t start = clock();
             trace(ray, Vector3f(1), 1, hitPoints[y * image->Height() + x]);
+            cnt += clock() - start;
         }
+        if (y % 20 == 0)
+            fprintf(stderr, "\ntotal Time: %lu\nTrace time: %lu\n", clock() - now, cnt);
     }
     fprintf(stderr, "\rRay tracing pass 100.000%%\n");
     initHitKDTree();
@@ -76,7 +82,6 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
     Hit hit;
     bool flag = group->intersect(ray, hit, 0);
     Vector3f p = ray.getOrigin() + ray.getDirection() * hit.getT();
-    // std::cerr << ray << std::endl;
     if (!hit.getMaterial() || !hp && hit.getT() < 1e-3) return;
     double s = BRDFs[hit.getMaterial()->brdf].specular + BRDFs[hit.getMaterial()->brdf].diffuse + BRDFs[hit.getMaterial()->brdf].refraction;
     double action = s * Math::random(0, 1);

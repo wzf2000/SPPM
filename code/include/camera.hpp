@@ -2,6 +2,7 @@
 #define CAMERA_H
 
 #include "ray.hpp"
+#include "math.hpp"
 #include <vecmath.h>
 #include <float.h>
 #include <cmath>
@@ -21,10 +22,13 @@ public:
 
     // Generate rays for each screen-space coordinate
     virtual Ray generateRay(const Vector2f &point) = 0;
+    virtual Ray generateRay() = 0;
     virtual ~Camera() = default;
 
     int getWidth() const { return width; }
     int getHeight() const { return height; }
+
+    friend class Renderer;
 
 protected:
     // Extrinsic parameters
@@ -61,9 +65,30 @@ public:
         return ray;
     }
 
+    Ray generateRay() override {
+        double alpha = Math::random(0, 2 * M_PI);
+        Vector3f s = center +  Vector3f(cos(alpha), 0, sin(alpha)) * 0.2;
+        Vector3f d = sampleReflectedRay(0.2);
+        d.normalize();
+        return Ray(s + d * 1e-6, d);
+    }
+
+    friend class Renderer;
+
 private:
     float fx, fy;
     float cx, cy;
+
+    Vector3f sampleReflectedRay(Vector3f norm, double s = 1) {
+        Vector3f u = Vector3f::cross(Vector3f(1, 0, 0), norm);
+        if (u.squaredLength() < 1e-6) u = Vector3f::cross(Vector3f(0, 1, 0), norm);
+        u.normalize();
+        Vector3f v = Vector3f::cross(norm, u);
+        v.normalize();
+        double theta = Math::random(0, 2 * M_PI);
+        double phi = asin(pow(Math::random(0, 1), 1. / (s + 1)));
+        return (norm * cos(phi) + (u * cos(theta) + v * sin(theta)) * sin(phi)).normalized();
+    }
 
 };
 

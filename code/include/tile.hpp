@@ -5,9 +5,6 @@ struct intCoord {
 };
 
 struct Tile {
-    unsigned width;
-    unsigned height;
     intCoord begin;
     intCoord end;
-    int tileNum;
 };

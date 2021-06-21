@@ -3,6 +3,9 @@
         "cstdlib": "cpp",
         "fstream": "cpp",
         "vector": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "__split_buffer": "cpp",
+        "deque": "cpp",
+        "random": "cpp"
     }
 }

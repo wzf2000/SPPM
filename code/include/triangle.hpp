@@ -45,6 +45,14 @@ public:
             hit.set(t, this->material, -normal);
         return true;
     }
+    double intersectPlane(const Ray &ray) {
+        Vector3f E1 = vertices[0] - vertices[1], E2 = vertices[0] - vertices[2], S = vertices[0] - ray.getOrigin();
+        double t = Matrix3f(S, E1, E2).determinant();
+        double n = Matrix3f(ray.getDirection(), E1, E2).determinant();
+        t /= n;
+        return t;
+    }
+
     Vector3f normal;
     Vector3f vertices[3];
 protected:

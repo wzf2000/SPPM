@@ -1,3 +1,4 @@
+#pragma once
 #include <vecmath.h>
 
 #include "hit.hpp"

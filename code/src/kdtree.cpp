@@ -10,15 +10,15 @@ KDTree::KDTree(std::vector<HitPoint*> hitpoints) {
     root = build(0, n - 1, 0);
 }
 
-static bool cmpX(const HitPoint *&a, const HitPoint *&b) {
+static bool cmpX(HitPoint *a, HitPoint *b) {
     return a->p.x() < b->p.x();
 }
 
-static bool cmpY(const HitPoint *&a, const HitPoint *&b) {
+static bool cmpY(HitPoint *a, HitPoint *b) {
     return a->p.y() < b->p.y();
 }
 
-static bool cmpZ(const HitPoint *&a, const HitPoint *&b) {
+static bool cmpZ(HitPoint *a, HitPoint *b) {
     return a->p.z() < b->p.z();
 }
 
@@ -32,7 +32,7 @@ KDTreeNode* KDTree::build(int l, int r, int d) {
         p->maxCoord = max(p->maxCoord, hitpoints[i]->p);
         p->maxr2 = std::max(p->maxr2, hitpoints[i]->r2);
     }
-    int m = l + r >> 1;
+    int m = (l + r) >> 1;
     if (d == 0) 
         std::nth_element(hitpoints + l, hitpoints + m, hitpoints + r + 1, cmpX);
     else if (d == 1) 

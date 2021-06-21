@@ -16,7 +16,7 @@ public:
     Triangle() = delete;
 
     // a b c are three vertex positions of the triangle
-    Triangle( const Vector3f& a, const Vector3f& b, const Vector3f& c, Material* m, Mesh *par) : Object3D(m), par(par) {
+    Triangle( const Vector3f& a, const Vector3f& b, const Vector3f& c, Material* m, Mesh *par = nullptr) : Object3D(m), par(par) {
         normal = Vector3f::cross(a - b, a - c);
         normal.normalize();
         vertices[0] = a;

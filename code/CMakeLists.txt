@@ -13,8 +13,8 @@ SET(PROJECT_SOURCES
         src/renderer.cpp
         src/mesh.cpp
         src/scene_parser.cpp
-        src/sampler.cpp
-        src/kdtree.cpp)
+        src/kdtree.cpp
+        src/math.cpp)
 
 SET(PROJECT_INCLUDES
         include/camera.hpp
@@ -33,7 +33,6 @@ SET(PROJECT_INCLUDES
         include/triangle.hpp
         include/tile.hpp
         include/renderer.hpp
-        include/sampler.hpp
         include/math.hpp
         include/kdtree.hpp
         include/hitpoint.hpp

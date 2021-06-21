@@ -1,3 +1,4 @@
+#pragma once
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
@@ -12,7 +13,6 @@
 #include "hit.hpp"
 #include "kdtree.hpp"
 
-const float gamma = 0.5;
 const int maxDepth = 10;
 
 class Renderer {

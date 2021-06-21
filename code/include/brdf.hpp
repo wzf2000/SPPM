@@ -7,7 +7,7 @@ public:
     double rho_d, rho_s, phong_s;
     double refractiveIndex;
     BRDF() {}
-    BRDF(double specular, double diffuse, double refraction, double rho_d, double rho_s, double phong_s, double refractiveIndex) : specular(specular), diffuse(diffuse), refraction(refraction), rho_d(rho_d), rho_s(rho_s), phone_s(phone_s), refractiveIndex(refractiveIndex) {}
+    BRDF(double specular, double diffuse, double refraction, double rho_d, double rho_s, double phong_s, double refractiveIndex) : specular(specular), diffuse(diffuse), refraction(refraction), rho_d(rho_d), rho_s(rho_s), phong_s(phong_s), refractiveIndex(refractiveIndex) {}
 };
 
 enum { 

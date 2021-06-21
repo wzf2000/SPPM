@@ -7,3 +7,4 @@ CMakeFiles
 Makefile
 *.cmake
 .vscode/
+**/.DS_Store

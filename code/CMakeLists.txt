@@ -11,6 +11,10 @@ IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
 ENDIF()
 
+IF(APPLE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} \"-Xpreprocessor -fopenmp -lomp\"")
+ENDIF()
+
 ADD_SUBDIRECTORY(deps/vecmath)
 
 SET(PROJECT_SOURCES

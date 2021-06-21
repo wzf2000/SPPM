@@ -51,6 +51,7 @@ public:
         // angle is in radian.
         fy = (float) height / (2 * tanf(angle1 / 2));
         fx = (float) width / (2 * tanf(angle2 / 2));
+        std::cerr << fx / width << " " << fy / height << std::endl;
         cx = width / 2.0f;
         cy = height / 2.0f;
     }

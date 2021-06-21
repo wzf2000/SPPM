@@ -1,8 +1,8 @@
 
 PerspectiveCamera {
-    center 0 0.15 -1
+    center 0 0 -1
     direction 0 0 1
-    up 0 1 0
+    up 0 -1 0
     angle1 63.3
     angle2 72.3
     width 1024

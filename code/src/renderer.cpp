@@ -48,24 +48,23 @@ void Renderer::renderPerTile(Tile tile) {
     clock_t cnt = 0;
     clock_t now = clock();
     for (int y = tile.begin.y; y < tile.end.y; ++y) {
+        fprintf(stderr, "\rRay tracing pass %.3lf%%", y * 100. / image->Width());
         #pragma omp parallel for schedule(dynamic, 60), num_threads(8)
         for (int x = tile.begin.x; x < tile.end.x; ++x) {
-            fprintf(stderr, "\rRay tracing pass %.3lf%%", y * 100. / image->Width());
             Ray camRay = camera->generateRay(Vector2f(y, x));
             double t = triangle.intersectPlane(camRay);
             Vector3f focusP = camRay.getOrigin() + camRay.getDirection() * t;
             double theta = Math::random(0, 2 * M_PI);
-            Ray ray(camRay.getOrigin() + Vector3f(cos(theta), sin(theta), 0) * aperture, (focusP - camRay.getOrigin()).normalized());
+            Ray ray(camRay.getOrigin() + Vector3f(cos(theta), sin(theta), 0) * aperture, (focusP - (camRay.getOrigin() + Vector3f(cos(theta), sin(theta), 0) * aperture)).normalized());
             hitPoints[y * image->Height() + x]->valid = false;
-            hitPoints[y * image->Height() + x]->dir = -1 * camRay.getDirection();
+            hitPoints[y * image->Height() + x]->dir = -1 * ray.getDirection();
             clock_t start = clock();
             trace(ray, Vector3f(1), 1, hitPoints[y * image->Height() + x]);
             cnt += clock() - start;
         }
-        if (y % 20 == 0)
-            fprintf(stderr, "\ntotal Time: %lu\nTrace time: %lu\n", clock() - now, cnt);
     }
     fprintf(stderr, "\rRay tracing pass 100.000%%\n");
+    fprintf(stderr, "total Time: %lu\nTrace time: %lu\n", clock() - now, cnt);
     initHitKDTree();
     Vector3f weight_init = 2.5;
     #pragma omp parallel for schedule(dynamic, 128), num_threads(8)

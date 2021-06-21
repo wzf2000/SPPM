@@ -1,7 +1,9 @@
 code/bin/
 code/build/
 code/output/
+code/checkpoints/
 CMakeCache.txt
 CMakeFiles
 Makefile
 *.cmake
+.vscode/

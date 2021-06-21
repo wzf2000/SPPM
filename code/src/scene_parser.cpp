@@ -121,9 +121,13 @@ void SceneParser::parsePerspectiveCamera() {
     assert (!strcmp(token, "up"));
     Vector3f up = readVector3f();
     getToken(token);
-    assert (!strcmp(token, "angle"));
-    float angle_degrees = readFloat();
-    float angle_radians = DegreesToRadians(angle_degrees);
+    assert (!strcmp(token, "angle1"));
+    float angle_degrees1 = readFloat();
+    float angle_radians1 = DegreesToRadians(angle_degrees1);
+    getToken(token);
+    assert (!strcmp(token, "angle2"));
+    float angle_degrees2 = readFloat();
+    float angle_radians2 = DegreesToRadians(angle_degrees2);
     getToken(token);
     assert (!strcmp(token, "width"));
     int width = readInt();
@@ -132,7 +136,7 @@ void SceneParser::parsePerspectiveCamera() {
     int height = readInt();
     getToken(token);
     assert (!strcmp(token, "}"));
-    camera = new PerspectiveCamera(center, direction, up, width, height, angle_radians);
+    camera = new PerspectiveCamera(center, direction, up, width, height, angle_radians1, angle_radians2);
 }
 
 void SceneParser::parseBackground() {
@@ -246,20 +250,16 @@ Material *SceneParser::parseMaterial() {
     char token[MAX_PARSER_TOKEN_LENGTH];
     char filename[MAX_PARSER_TOKEN_LENGTH];
     filename[0] = 0;
-    Vector3f diffuseColor(1, 1, 1), specularColor(0, 0, 0);
-    float shininess = 0;
     int brdf = DIFFUSE;
     Texture *t = nullptr;
+    Vector3f color = Vector3f::ZERO;
     getToken(token);
     assert (!strcmp(token, "{"));
     while (true) {
         getToken(token);
-        if (strcmp(token, "diffuseColor") == 0) {
-            diffuseColor = readVector3f();
-        } else if (strcmp(token, "specularColor") == 0) {
-            specularColor = readVector3f();
-        } else if (strcmp(token, "shininess") == 0) {
-            shininess = readFloat();
+        if (strcmp(token, "color") == 0) {
+            // Optional: read in texture and draw it.
+            color = readVector3f();
         } else if (strcmp(token, "texture") == 0) {
             // Optional: read in texture and draw it.
             Vector3f x, y;
@@ -277,8 +277,8 @@ Material *SceneParser::parseMaterial() {
             break;
         }
     }
-    if (!t) t = new Texture(specularColor);
-    auto *answer = new Material(diffuseColor, specularColor, shininess, brdf, t);
+    if (!t) t = new Texture(color);
+    auto *answer = new Material(brdf, t);
     return answer;
 }
 
@@ -573,7 +573,7 @@ Transform *SceneParser::parseTransform() {
 int SceneParser::getToken(char token[MAX_PARSER_TOKEN_LENGTH]) {
     // for simplicity, tokens must be separated by whitespace
     assert (file != nullptr);
-    int success = fscanf(file, "%s ", token);
+    int success = fscanf(file, "%s", token);
     if (success == EOF) {
         token[0] = '\0';
         return 0;

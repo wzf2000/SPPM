@@ -9,7 +9,7 @@
 #include "mesh.hpp"
 
 Renderer::Renderer(SceneParser *scene) : scene(scene), light(1), aperture(1e-3), focus(1.09), kdtree(nullptr) {
-    numPhotons = 2000;
+    numPhotons = 200000;
     camera = scene->getCamera();
     image = new Image(camera->getWidth(), camera->getHeight());
     for (int i = 0; i < image->Width(); ++i)
@@ -25,7 +25,7 @@ void Renderer::evaluateRadiance(int numRounds) {
             color.x() = std::pow(color.x(), Math::gamma);
             color.y() = std::pow(color.y(), Math::gamma);
             color.z() = std::pow(color.z(), Math::gamma);
-            image->SetPixel(x, y, min(color, Vector3f(1)));
+            image->SetPixel(y, x, min(color, Vector3f(1)));
     }
 }
 
@@ -33,11 +33,10 @@ void Renderer::render(int numRounds, std::string output) {
     for (int i = 0; i < numRounds; ++i) {
         fprintf(stderr, "Round %d/%d:\n", i + 1, numRounds);
         renderPerTile((Tile){(intCoord){0, 0}, (intCoord){image->Height(), image->Width()}});
-        if ((i + 1) % 10 == 0) {
+        if ((i + 1) % 1 == 0) {
             evaluateRadiance(i + 1);
             char filename[100];
             sprintf(filename, "checkpoints/checkpoint-%d.bmp", i + 1);
-            fprintf(stderr, "\n%s\n", filename);
             image->SaveImage(filename);
         }
     }
@@ -47,6 +46,7 @@ void Renderer::render(int numRounds, std::string output) {
 void Renderer::renderPerTile(Tile tile) {
     Triangle triangle(Vector3f(0, 0, camera->center.z() + focus), Vector3f(0, 1, camera->center.z() + focus), Vector3f(1, 0, camera->center.z() + focus), nullptr);
     for (int y = tile.begin.y; y < tile.end.y; ++y) {
+        #pragma omp parallel for schedule(dynamic, 60), num_threads(8)
         for (int x = tile.begin.x; x < tile.end.x; ++x) {
             fprintf(stderr, "\rRay tracing pass %.3lf%%", y * 100. / image->Width());
             Ray camRay = camera->generateRay(Vector2f(x, y));
@@ -62,6 +62,7 @@ void Renderer::renderPerTile(Tile tile) {
     fprintf(stderr, "\rRay tracing pass 100.000%%\n");
     initHitKDTree();
     Vector3f weight_init = 2.5;
+    #pragma omp parallel for schedule(dynamic, 128), num_threads(8)
     for (int i = 0; i < numPhotons; ++i) {
         Ray camRay = camera->generateRay();
         trace(camRay, weight_init * light, 1);
@@ -75,7 +76,7 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
     Hit hit;
     bool flag = group->intersect(ray, hit, 0);
     Vector3f p = ray.getOrigin() + ray.getDirection() * hit.getT();
-    std::cerr << ray << std::endl;
+    // std::cerr << ray << std::endl;
     if (!hit.getMaterial() || !hp && hit.getT() < 1e-3) return;
     double s = BRDFs[hit.getMaterial()->brdf].specular + BRDFs[hit.getMaterial()->brdf].diffuse + BRDFs[hit.getMaterial()->brdf].refraction;
     double action = s * Math::random(0, 1);

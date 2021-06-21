@@ -47,9 +47,10 @@ class PerspectiveCamera : public Camera {
 
 public:
     PerspectiveCamera(const Vector3f &center, const Vector3f &direction,
-            const Vector3f &up, int imgW, int imgH, float angle) : Camera(center, direction, up, imgW, imgH) {
+            const Vector3f &up, int imgW, int imgH, float angle1, float angle2) : Camera(center, direction, up, imgW, imgH) {
         // angle is in radian.
-        fx = fy = (float) height / (2 * tanf(angle / 2));
+        fy = (float) height / (2 * tanf(angle1 / 2));
+        fx = (float) width / (2 * tanf(angle2 / 2));
         cx = width / 2.0f;
         cy = height / 2.0f;
     }

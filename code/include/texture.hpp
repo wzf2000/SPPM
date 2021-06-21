@@ -1,5 +1,6 @@
 #pragma once
 #include <vecmath.h>
+#include <iostream>
 #include "image.hpp"
 
 class Texture {
@@ -18,7 +19,7 @@ public:
             for (int j = 0; j < width; ++j) {
                 int r, g, b;
                 fscanf(file, "%d%d%d", &r, &g, &b);
-                image->SetPixel(i, j, Vector3f(r / 255., g / 255., b / 255.));
+                image->SetPixel(j, i, Vector3f(r / 255., g / 255., b / 255.));
             }
         }
         fclose(file);

@@ -3,6 +3,8 @@
 
 namespace Math {
 
+    const double alpha = 0.7;
+
     static double random01() {
         static std::mt19937 *generator = nullptr;
         if (!generator) 

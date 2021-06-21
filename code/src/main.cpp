@@ -10,6 +10,7 @@
 #include "camera.hpp"
 #include "group.hpp"
 #include "light.hpp"
+#include "renderer.hpp"
 
 #include <string>
 
@@ -20,43 +21,16 @@ int main(int argc, char *argv[]) {
         std::cout << "Argument " << argNum << " is: " << argv[argNum] << std::endl;
     }
 
-    if (argc != 3) {
-        cout << "Usage: ./bin/PA1 <input scene file> <output bmp file>" << endl;
+    if (argc != 3 && argc != 4) {
+        cout << "Usage: ./bin/Project <input scene file> <output bmp file> [num of rounds]" << endl;
         return 1;
     }
     string inputFile = argv[1];
     string outputFile = argv[2];  // only bmp is allowed.
-
-    // TODO: Main RayCasting Logic
-    // First, parse the scene using SceneParser.
-    // Then loop over each pixel in the image, shooting a ray
-    // through that pixel and finding its intersection with
-    // the scene.  Write the color at the intersection to that
-    // pixel in your output image.
     SceneParser sceneParser(inputFile.c_str());
-    Camera *camera = sceneParser.getCamera();
-    Image renderedImg(camera->getWidth(), camera->getHeight());
-    for (int x = 0; x < camera->getWidth(); ++x) {
-        for (int y = 0; y < camera->getHeight(); ++y) {
-            Ray camRay = camera->generateRay(Vector2f(x, y));
-            Group *baseGroup = sceneParser.getGroup();
-            Hit hit;
-            bool isIntersect = baseGroup->intersect(camRay, hit, 0);
-            if (isIntersect) {
-                Vector3f finalColor = Vector3f::ZERO;
-                for (int li = 0; li < sceneParser.getNumLights(); ++li) {
-                    Light *light = sceneParser.getLight(li);
-                    Vector3f L, lightColor;
-                    light->getIllumination(camRay.pointAtParameter(hit.getT()), L, lightColor);
-                    finalColor += hit.getMaterial()->Shade(camRay, hit, L, lightColor);
-                }
-                renderedImg.SetPixel(x, y, finalColor);
-            } else {
-                renderedImg.SetPixel(x, y, sceneParser.getBackgroundColor());
-            }
-        }
-    }
-    renderedImg.SaveImage(outputFile.c_str());
+    Renderer renderer(&sceneParser);
+    int numRounds = (argc == 3) ? 2500 : stoi(string(argv[3]));
+    renderer.render(numRounds, outputFile);
     cout << "Hello! Computer Graphics!" << endl;
     return 0;
 }

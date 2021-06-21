@@ -7,7 +7,7 @@
 #include "hitpoint.hpp"
 #include "triangle.hpp"
 
-Renderer::Renderer(SceneParser *scene) : scene(scene), light(1), aperture(1e-3), focus(1.09) {
+Renderer::Renderer(SceneParser *scene) : scene(scene), light(1), aperture(1e-3), focus(1.09), kdtree(nullptr) {
     camera = scene->getCamera();
     image = new Image(camera->getWidth(), camera->getHeight());
     for (int i = 0; i < image->Width(); ++i)
@@ -27,16 +27,17 @@ void Renderer::evaluateRadiance(int numRounds) {
     }
 }
 
-void Renderer::render(int numRounds) {
+void Renderer::render(int numRounds, std::string output) {
     for (int i = 0; i < numRounds; ++i) {
         renderPerTile((Tile){(intCoord){0, 0}, (intCoord){image->Height(), image->Width()}});
         if ((i + 1) % 100 == 0) {
             evaluateRadiance(i + 1);
             char filename[100];
-            sprintf(filename, "checkpoint-%d.ppm", i + 1);
+            sprintf(filename, "output/checkpoint-%d.ppm", i + 1);
             image->SaveImage(filename);
         }
     }
+    image->SaveImage(output.c_str());
 }
 
 void Renderer::renderPerTile(Tile tile) {
@@ -62,9 +63,12 @@ void Renderer::renderPerTile(Tile tile) {
 }
 
 void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint *hp) {
-    
+    if (depth > maxDepth) return;
+    double tmin = 1e100;
+    Group *group = 
 }
 
 void Renderer::initHitKDTree() {
-
+    if (kdtree) delete kdtree;
+    kdtree = new KDTree(hitPoints);
 }

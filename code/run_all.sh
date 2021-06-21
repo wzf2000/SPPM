@@ -14,6 +14,10 @@ else
     cd ..
 fi
 
+if [[ ! -d checkpoints ]]; then
+    mkdir -p checkpoints
+fi
+
 # Build project.
 cd build
 make -j

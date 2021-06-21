@@ -6,6 +6,8 @@
 
 #include "ray.hpp"
 #include "hit.hpp"
+#include "brdf.hpp"
+#include "texture.hpp"
 #include <iostream>
 
 // TODO: Implement Shade function that computes Phong introduced in class.
@@ -17,8 +19,8 @@ private:
 
 public:
 
-    explicit Material(const Vector3f &d_color, const Vector3f &s_color = Vector3f::ZERO, float s = 0) :
-            diffuseColor(d_color), specularColor(s_color), shininess(s) {
+    explicit Material(const Vector3f &d_color, const Vector3f &s_color = Vector3f::ZERO, float s = 0, int brdf = DIFFUSE, Texture *t = nullptr) :
+            diffuseColor(d_color), specularColor(s_color), shininess(s), brdf(brdf), texture(t) {
 
     }
 
@@ -37,6 +39,10 @@ public:
         shaded = shaded * lightColor;
         return shaded;
     }
+
+    Texture *texture;
+
+    int brdf;
 
 protected:
     Vector3f diffuseColor;

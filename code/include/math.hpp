@@ -1,9 +1,26 @@
 #include <iostream>
 #include <random>
+#include <vecmath.h>
 
 namespace Math {
 
     const double alpha = 0.7;
+    const double eps = 1e-6;
+
+    double sqr(double x) {
+        return x * x;
+    }
+
+    Vector3f sampleReflectedRay(Vector3f norm, double s = 1) {
+        Vector3f u = Vector3f::cross(Vector3f(1, 0, 0), norm);
+        if (u.squaredLength() < Math::eps) u = Vector3f::cross(Vector3f(0, 1, 0), norm);
+        u.normalize();
+        Vector3f v = Vector3f::cross(norm, u);
+        v.normalize();
+        double theta = Math::random(0, 2 * M_PI);
+        double phi = asin(pow(Math::random(0, 1), 1. / (s + 1)));
+        return (norm * cos(phi) + (u * cos(theta) + v * sin(theta)) * sin(phi)).normalized();
+    }
 
     static double random01() {
         static std::mt19937 *generator = nullptr;
@@ -13,7 +30,7 @@ namespace Math {
         return dis(*generator);
     }
 
-    double random(double l, double r) {
+    double random(double l = 0, double r = 1) {
         return l + random01() * (r - l);
     }
 

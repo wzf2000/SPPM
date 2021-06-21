@@ -37,6 +37,7 @@ SET(PROJECT_INCLUDES
         include/math.hpp
         include/kdtree.hpp
         include/hitpoint.hpp
+        include/texture.hpp
         )
 
 SET(CMAKE_CXX_STANDARD 11)

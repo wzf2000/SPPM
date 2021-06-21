@@ -5,6 +5,7 @@
 #include "ray.hpp"
 
 class Material;
+class Mesh;
 
 class Hit {
 public:
@@ -42,11 +43,13 @@ public:
         return normal;
     }
 
-    void set(float _t, Material *m, const Vector3f &n) {
+    void set(float _t, Material *m, const Vector3f &n, Mesh *o = nullptr) {
         t = _t;
         material = m;
         normal = n;
+        object = o;
     }
+    Mesh *object;
 
 private:
     float t;

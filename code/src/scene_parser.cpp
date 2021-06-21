@@ -16,6 +16,7 @@
 #include "transform.hpp"
 #include "curve.hpp"
 #include "revsurface.hpp"
+#include "brdf.hpp"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -247,6 +248,8 @@ Material *SceneParser::parseMaterial() {
     filename[0] = 0;
     Vector3f diffuseColor(1, 1, 1), specularColor(0, 0, 0);
     float shininess = 0;
+    int brdf = DIFFUSE;
+    Texture *t = nullptr;
     getToken(token);
     assert (!strcmp(token, "{"));
     while (true) {
@@ -259,13 +262,23 @@ Material *SceneParser::parseMaterial() {
             shininess = readFloat();
         } else if (strcmp(token, "texture") == 0) {
             // Optional: read in texture and draw it.
+            Vector3f x, y;
+            double xb, yb;
             getToken(filename);
+            x = readVector3f();
+            xb = readFloat();
+            y = readVector3f();
+            yb = readFloat();
+            t = new Texture(filename, x, xb, y, yb);
+        } else if (strcmp(token, "BRDF") == 0) {
+            brdf = readInt();
         } else {
             assert (!strcmp(token, "}"));
             break;
         }
     }
-    auto *answer = new Material(diffuseColor, specularColor, shininess);
+    if (!t) t = new Texture(specularColor);
+    auto *answer = new Material(diffuseColor, specularColor, shininess, brdf, t);
     return answer;
 }
 

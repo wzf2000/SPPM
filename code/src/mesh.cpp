@@ -12,8 +12,7 @@ bool Mesh::intersect(const Ray &r, Hit &h, float tmin) {
     bool result = false;
     for (int triId = 0; triId < (int) t.size(); ++triId) {
         TriangleIndex& triIndex = t[triId];
-        Triangle triangle(v[triIndex[0]],
-                          v[triIndex[1]], v[triIndex[2]], material);
+        Triangle triangle(v[triIndex[0]], v[triIndex[1]], v[triIndex[2]], material, this);
         triangle.normal = n[triId];
         result |= triangle.intersect(r, h, tmin);
     }
@@ -92,4 +91,11 @@ void Mesh::computeNormal() {
         b = Vector3f::cross(a, b);
         n[triId] = b / b.length();
     }
+}
+
+void Mesh::calcCenter() {
+    center = new Vector3f(0);
+    for (auto &vertex : v)
+        *center = *center + vertex;
+    *center = *center / v.size();
 }

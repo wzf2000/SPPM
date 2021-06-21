@@ -51,19 +51,15 @@ void KDTree::del(KDTreeNode *p) {
     delete p;
 }
 
-static double sqr(double x) {
-    return x * x;
-}
-
 void KDTree::update(KDTreeNode * p, Vector3f photon, Vector3f weight, Vector3f d) {
     if (!p) return;
     double mind = 0, maxd = 0;
-    if (photon.x() > p->maxCoord.x()) mind += sqr(photon.x()- p->maxCoord.x());
-    if (photon.x() < p->minCoord.x()) mind += sqr(p->minCoord.x()- photon.x());
-    if (photon.y() > p->maxCoord.y()) mind += sqr(photon.y()- p->maxCoord.y());
-    if (photon.y()< p->minCoord.y()) mind += sqr(p->minCoord.y()- photon.y());
-    if (photon.z()> p->maxCoord.z()) mind += sqr(photon.z()- p->maxCoord.z());
-    if (photon.z()< p->minCoord.z()) mind += sqr(p->minCoord.z()- photon.z());
+    if (photon.x() > p->maxCoord.x()) mind += Math::sqr(photon.x()- p->maxCoord.x());
+    if (photon.x() < p->minCoord.x()) mind += Math::sqr(p->minCoord.x()- photon.x());
+    if (photon.y() > p->maxCoord.y()) mind += Math::sqr(photon.y()- p->maxCoord.y());
+    if (photon.y()< p->minCoord.y()) mind += Math::sqr(p->minCoord.y()- photon.y());
+    if (photon.z()> p->maxCoord.z()) mind += Math::sqr(photon.z()- p->maxCoord.z());
+    if (photon.z()< p->minCoord.z()) mind += Math::sqr(p->minCoord.z()- photon.z());
     if (mind > p->maxr2) return;
     if (p->hitpoint->valid && (photon - p->hitpoint->p).squaredLength() <= p->hitpoint->r2) {
         HitPoint *hp = p->hitpoint;

@@ -82,7 +82,7 @@ Background {
 }
 
 Group {
-    numObjects 6
+    numObjects 7
     MaterialIndex 0
     TriangleMesh {
 	    obj_file obj/top.obj
@@ -107,5 +107,16 @@ Group {
     TriangleMesh {
 	    obj_file obj/right.obj
     }
+    MaterialIndex 11
+    Transform {
+        Translate 0 1 0
+        YRotate -15
+        Translate 0.24 -0.59 0.12
+        Scale 2.8 -2.8 2.8
+        TriangleMesh {
+            obj_file obj/bunny_1k.obj
+        }
+    }
+    
 }
 

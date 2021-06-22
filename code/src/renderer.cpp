@@ -34,7 +34,7 @@ void Renderer::render(int numRounds, std::string output) {
     for (int i = 0; i < numRounds; ++i) {
         fprintf(stderr, "Round %d/%d:\n", i + 1, numRounds);
         renderPerTile((Tile){(intCoord){0, 0}, (intCoord){image->Height(), image->Width()}});
-        if ((i + 1) % 1 == 0) {
+        if ((i + 1) % 50 == 0) {
             evaluateRadiance(i + 1);
             char filename[100];
             sprintf(filename, "checkpoints/checkpoint-%d.bmp", i + 1);

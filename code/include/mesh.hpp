@@ -6,6 +6,7 @@
 #include "triangle.hpp"
 #include "Vector2f.h"
 #include "Vector3f.h"
+#include "objectkdtree.hpp"
 
 
 class Mesh : public Object3D {
@@ -25,6 +26,8 @@ public:
     std::vector<Vector3f> v;
     std::vector<TriangleIndex> t;
     std::vector<Vector3f> n;
+    std::vector<Triangle*> faces;
+    ObjectKDTree *kdtree;
     Vector3f *center = nullptr;
     void calcCenter();
     bool intersect(const Ray &r, Hit &h, float tmin) override;

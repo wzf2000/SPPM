@@ -24,7 +24,8 @@ SET(PROJECT_SOURCES
         src/mesh.cpp
         src/scene_parser.cpp
         src/kdtree.cpp
-        src/math.cpp)
+        src/math.cpp
+        src/objectkdtree.cpp)
 
 SET(PROJECT_INCLUDES
         include/camera.hpp
@@ -47,6 +48,7 @@ SET(PROJECT_INCLUDES
         include/kdtree.hpp
         include/hitpoint.hpp
         include/texture.hpp
+        include/objectkdtree.hpp
         )
 
 SET(CMAKE_CXX_STANDARD 11)

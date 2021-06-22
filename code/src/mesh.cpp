@@ -9,14 +9,15 @@
 bool Mesh::intersect(const Ray &r, Hit &h, float tmin) {
 
     // Optional: Change this brute force method into a faster one.
-    bool result = false;
-    for (int triId = 0; triId < (int) t.size(); ++triId) {
-        TriangleIndex& triIndex = t[triId];
-        Triangle triangle(v[triIndex[0]], v[triIndex[1]], v[triIndex[2]], material, this);
-        triangle.normal = n[triId];
-        result |= triangle.intersect(r, h, tmin);
-    }
-    return result;
+    // bool result = false;
+    // for (int triId = 0; triId < (int) t.size(); ++triId) {
+    //     TriangleIndex& triIndex = t[triId];
+    //     Triangle triangle(v[triIndex[0]], v[triIndex[1]], v[triIndex[2]], material, this);
+    //     triangle.normal = n[triId];
+    //     result |= triangle.intersect(r, h, tmin);
+    // }
+    // return result;
+    return kdtree->intersect(kdtree->root, r, h, tmin);
 }
 
 Mesh::Mesh(const char *filename, Material *material) : Object3D(material) {
@@ -80,6 +81,11 @@ Mesh::Mesh(const char *filename, Material *material) : Object3D(material) {
     computeNormal();
 
     f.close();
+    faces.clear();
+    for (auto triangleIndex : t) {
+        faces.emplace_back(new Triangle(v[triangleIndex[0]], v[triangleIndex[1]], v[triangleIndex[2]], material, this));
+    }
+    kdtree = new ObjectKDTree(faces);
 }
 
 void Mesh::computeNormal() {

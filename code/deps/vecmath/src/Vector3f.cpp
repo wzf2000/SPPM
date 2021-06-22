@@ -334,3 +334,12 @@ std::ostream &operator<<(std::ostream &os, const Vector3f &v) {
 	os << '[' << v.x() << ", " << v.y() << ", " << v.z() << ']';
 	return os;
 }
+
+bool operator<=(const Vector3f &a, const Vector3f &b) {
+    return a.x() <= b.x() + 1e-6 && a.y() <= b.y() + 1e-6 && a.z() <= b.z() + 1e-6;
+}
+
+bool operator>=(const Vector3f &a, const Vector3f &b) {
+    return b.x() <= a.x() + 1e-6 && b.y() <= a.y() + 1e-6 && b.z() <= a.z() + 1e-6;
+}
+

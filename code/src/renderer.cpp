@@ -33,7 +33,8 @@ void Renderer::evaluateRadiance(int numRounds) {
 void Renderer::render(int numRounds, std::string output) {
     for (int i = 0; i < numRounds; ++i) {
         fprintf(stderr, "Round %d/%d:\n", i + 1, numRounds);
-        renderPerTile((Tile){(intCoord){0, 0}, (intCoord){image->Height(), image->Width()}});
+        // renderPerTile((Tile){(intCoord){0, 0}, (intCoord){image->Height(), image->Width()}});
+        renderPerTile((Tile){(intCoord){300, 450}, (intCoord){450, 550}});
         if ((i + 1) % 1 == 0) {
             evaluateRadiance(i + 1);
             char filename[100];
@@ -131,6 +132,8 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
             incoming = Vector3f::dot(*(hit.center) - p, hit.getNormal()) < 0;
             if (!incoming) refractiveIndex = 1. / refractiveIndex;
         }
+
+        if (hit.getMaterial()->brdf == WATER) std::cerr << incoming << " " << hit.getT() << std::endl;
         
         double cosThetaIn = -Vector3f::dot(ray.getDirection(), hit.getNormal());
         double cosThetaOut2 = 1 - (1 - Math::sqr(cosThetaIn)) / Math::sqr(refractiveIndex);

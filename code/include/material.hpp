@@ -13,7 +13,7 @@
 // TODO: Implement Shade function that computes Phong introduced in class.
 class Material {
 private:
-    float clamp(float x) {
+    double clamp(double x) {
         return x > 0 ? x : 0;
     }
 

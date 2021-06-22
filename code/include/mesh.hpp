@@ -30,7 +30,7 @@ public:
     ObjectKDTree *kdtree;
     Vector3f *center = nullptr;
     void calcCenter();
-    bool intersect(const Ray &r, Hit &h, float tmin) override;
+    bool intersect(const Ray &r, Hit &h, double tmin) override;
 
 private:
 

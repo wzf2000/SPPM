@@ -24,7 +24,7 @@ public:
     vector<Triangle*> faces;
     ObjectKDTree(vector<Triangle*> faces);
     double getCuboidIntersection(ObjectKDTreeNode *p, const Ray &ray);
-    bool intersect(ObjectKDTreeNode *p, const Ray &ray, Hit &hit, float tmin);
+    bool intersect(ObjectKDTreeNode *p, const Ray &ray, Hit &hit, double tmin);
 };
 
 const int max_faces = 8;

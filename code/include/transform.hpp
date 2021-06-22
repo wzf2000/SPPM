@@ -26,10 +26,10 @@ public:
     ~Transform() {
     }
 
-    virtual bool intersect(const Ray &r, Hit &h, float tmin) {
+    virtual bool intersect(const Ray &r, Hit &h, double tmin) {
         Vector3f trSource = transformPoint(transform, r.getOrigin());
         Vector3f trDirection = transformDirection(transform, r.getDirection());
-        float length = trDirection.length();
+        double length = trDirection.length();
         trDirection.normalize();
         Ray tr(trSource, trDirection);
         bool inter = o->intersect(tr, h, tmin);

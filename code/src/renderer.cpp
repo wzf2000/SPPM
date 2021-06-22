@@ -45,8 +45,6 @@ void Renderer::render(int numRounds, std::string output) {
 
 void Renderer::renderPerTile(Tile tile) {
     Triangle triangle(Vector3f(0, 0, camera->center.z() + focus), Vector3f(0, 1, camera->center.z() + focus), Vector3f(1, 0, camera->center.z() + focus), nullptr);
-    clock_t cnt = 0;
-    clock_t now = clock();
     for (int y = tile.begin.y; y < tile.end.y; ++y) {
         fprintf(stderr, "\rRay tracing pass %.3lf%%", y * 100. / image->Width());
         #pragma omp parallel for schedule(dynamic, 60), num_threads(8)
@@ -58,13 +56,10 @@ void Renderer::renderPerTile(Tile tile) {
             Ray ray(camRay.getOrigin() + Vector3f(cos(theta), sin(theta), 0) * aperture, (focusP - (camRay.getOrigin() + Vector3f(cos(theta), sin(theta), 0) * aperture)).normalized());
             hitPoints[y * image->Height() + x]->valid = false;
             hitPoints[y * image->Height() + x]->dir = -1 * ray.getDirection();
-            clock_t start = clock();
             trace(ray, Vector3f(1), 1, hitPoints[y * image->Height() + x]);
-            cnt += clock() - start;
         }
     }
     fprintf(stderr, "\rRay tracing pass 100.000%%\n");
-    fprintf(stderr, "total Time: %lu\nTrace time: %lu\n", clock() - now, cnt);
     initHitKDTree();
     Vector3f weight_init = 2.5;
     #pragma omp parallel for schedule(dynamic, 128), num_threads(8)

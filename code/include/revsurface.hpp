@@ -42,7 +42,7 @@ public:
         for (unsigned int ci = 0; ci < curvePoints.size(); ++ci) {
             const CurvePoint &cp = curvePoints[ci];
             for (unsigned int i = 0; i < steps; ++i) {
-                float t = (float) i / steps;
+                double t = (double) i / steps;
                 Quat4f rot;
                 rot.setAxisAngle(t * 2 * 3.14159, Vector3f::UP);
                 Vector3f pnew = Matrix3f::rotation(rot) * cp.V;
@@ -63,7 +63,7 @@ public:
         delete pCurve;
     }
 
-    bool intersect(const Ray &r, Hit &h, float tmin) override {
+    bool intersect(const Ray &r, Hit &h, double tmin) override {
         // (PA3 optional TODO): implement this for the ray-tracing routine using G-N iteration.
         bool result = false;
         for (auto face: surface.VF) {

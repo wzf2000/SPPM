@@ -41,12 +41,12 @@ ObjectKDTreeNode *ObjectKDTree::build(int depth, int d, vector<Triangle*> &faces
         p->ls->faces.clear();
         p->rs->faces.clear();
         p->faces.clear();
-        for (auto face : faceL) 
+        for (auto face : faceL)
             if (cnt[face] == 1) 
                 p->ls->faces.emplace_back(face);
             else
                 p->faces.emplace_back(face);
-        for (auto face : faceR) 
+        for (auto face : faceR)
             if (cnt[face] == 1) 
                 p->rs->faces.emplace_back(face);
     }
@@ -93,10 +93,10 @@ double ObjectKDTree::getCuboidIntersection(ObjectKDTreeNode *p, const Ray &ray) 
     else return -1e100;
 }
 
-bool ObjectKDTree::intersect(ObjectKDTreeNode *p, const Ray &ray, Hit &hit, float tmin) {
+bool ObjectKDTree::intersect(ObjectKDTreeNode *p, const Ray &ray, Hit &hit, double tmin) {
     bool flag = false;
-    for (int i = 0; i < p->faces.size(); ++i) {
-        flag |= p->faces[i]->intersect(ray, hit, tmin);
+    for (auto face : p->faces) {
+        flag |= face->intersect(ray, hit, tmin);
     }
     
     double tl = p->ls ? getCuboidIntersection(p->ls, ray) : 1e100;

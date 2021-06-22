@@ -32,13 +32,13 @@ public:
         return ::max(vertices[0], ::max(vertices[1], vertices[2]));
     }
 
-    bool intersect( const Ray& ray,  Hit& hit , float tmin) override {
+    bool intersect( const Ray& ray,  Hit& hit , double tmin) override {
         Vector3f E1 = vertices[0] - vertices[1];
         Vector3f E2 = vertices[0] - vertices[2];
         Vector3f S = vertices[0] - ray.getOrigin();
-        float t = Matrix3f(S, E1, E2).determinant() / Matrix3f(ray.getDirection(), E1, E2).determinant();
-        float beta = Matrix3f(ray.getDirection(), S, E2).determinant() / Matrix3f(ray.getDirection(), E1, E2).determinant();
-        float gamma = Matrix3f(ray.getDirection(), E1, S).determinant() / Matrix3f(ray.getDirection(), E1, E2).determinant();
+        double t = Matrix3f(S, E1, E2).determinant() / Matrix3f(ray.getDirection(), E1, E2).determinant();
+        double beta = Matrix3f(ray.getDirection(), S, E2).determinant() / Matrix3f(ray.getDirection(), E1, E2).determinant();
+        double gamma = Matrix3f(ray.getDirection(), E1, S).determinant() / Matrix3f(ray.getDirection(), E1, E2).determinant();
         if (beta < 0 || beta > 1 || gamma < 0 || gamma > 1 || beta + gamma > 1 || t < tmin || t > hit.getT())
             return false;
         if (Vector3f::dot(normal, ray.getDirection()) < 0)

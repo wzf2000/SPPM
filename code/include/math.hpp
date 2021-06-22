@@ -7,7 +7,7 @@ namespace Math {
 
     const double alpha = 0.7;
     const double eps = 1e-6;
-    const float gamma = 0.5;
+    const double gamma = 0.5;
 
     double sqr(double x);
 

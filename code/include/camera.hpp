@@ -47,18 +47,18 @@ class PerspectiveCamera : public Camera {
 
 public:
     PerspectiveCamera(const Vector3f &center, const Vector3f &direction,
-            const Vector3f &up, int imgW, int imgH, float angle1, float angle2) : Camera(center, direction, up, imgW, imgH) {
+            const Vector3f &up, int imgW, int imgH, double angle1, double angle2) : Camera(center, direction, up, imgW, imgH) {
         // angle is in radian.
-        fy = (float) height / (2 * tanf(angle1 / 2));
-        fx = (float) width / (2 * tanf(angle2 / 2));
+        fy = (double) height / (2 * tanf32x(angle1 / 2));
+        fx = (double) width / (2 * tanf32x(angle2 / 2));
         std::cerr << fx / width << " " << fy / height << std::endl;
         cx = width / 2.0f;
         cy = height / 2.0f;
     }
 
     Ray generateRay(const Vector2f &point) override {
-        float csx = (point.x() - cx) / fx;
-        float csy = (point.y() - cy) / fy;
+        double csx = (point.x() - cx) / fx;
+        double csy = (point.y() - cy) / fy;
         Vector3f dir(csx, -csy, 1.0f);
         Matrix3f R(this->horizontal, -this->up, this->direction);
         dir = R * dir;
@@ -78,8 +78,8 @@ public:
     friend class Renderer;
 
 private:
-    float fx, fy;
-    float cx, cy;
+    double fx, fy;
+    double cx, cy;
 
 };
 

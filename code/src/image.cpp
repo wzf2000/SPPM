@@ -20,7 +20,7 @@ void WriteByte( FILE* file, unsigned char b )
     assert( success == 1 );
 }
 
-unsigned char ClampColorComponent( float c )
+unsigned char ClampColorComponent( double c )
 {
     int tmp = int( c * 255 );
     
@@ -300,12 +300,12 @@ void Image::SaveImage(const char * filename)
     }
 }
 
-Vector3f Image::textureGetPixel(float x, float y, bool filtered) {
+Vector3f Image::textureGetPixel(double x, double y, bool filtered) {
     if (!filtered) return GetPixel(int(x), int(y));
     x = x * width;
     y = y * height;
-    float xcopy = x - 0.5f;
-    float ycopy = y - 0.5f;
+    double xcopy = x - 0.5f;
+    double ycopy = y - 0.5f;
     int xint = int(xcopy);
     int yint = int(ycopy);
     Vector3f topleft = GetPixel(xint, yint);

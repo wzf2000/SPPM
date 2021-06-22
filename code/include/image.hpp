@@ -57,7 +57,7 @@ public:
 
     void SaveImage(const char *filename);
 
-    Vector3f textureGetPixel(float x, float y, bool filtered);
+    Vector3f textureGetPixel(double x, double y, bool filtered);
 
 private:
 

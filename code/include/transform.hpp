@@ -31,11 +31,13 @@ public:
         double length = trDirection.length();
         trDirection.normalize();
         Ray tr(trSource, trDirection);
-        bool inter = o->intersect(tr, h, tmin);
-        if (inter) {
-            h.set(h.getT() / length, h.getMaterial(), transformDirection(transform.transposed(), h.getNormal()).normalized(), h.center);
+        Hit hh;
+        bool inter = o->intersect(tr, hh, tmin);
+        if (inter && hh.getT() / length < h.getT()) {
+            h.set(hh.getT() / length, hh.getMaterial(), transformDirection(transform.transposed(), hh.getNormal()).normalized(), hh.center);
+            return true;
         }
-        return inter;
+        return false;
     }
 
 protected:

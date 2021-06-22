@@ -23,6 +23,11 @@ public:
 
     }
 
+    Object3D *operator[](const int &index) {
+        assert(index >= 0 && index < group.size());
+        return group[index];
+    }
+
     bool intersect(const Ray &r, Hit &h, double tmin) override {
         bool ret = false;
         for (auto object : group)

@@ -33,8 +33,7 @@ void Renderer::evaluateRadiance(int numRounds) {
 void Renderer::render(int numRounds, std::string output) {
     for (int i = 0; i < numRounds; ++i) {
         fprintf(stderr, "Round %d/%d:\n", i + 1, numRounds);
-        // renderPerTile((Tile){(intCoord){0, 0}, (intCoord){image->Height(), image->Width()}});
-        renderPerTile((Tile){(intCoord){300, 450}, (intCoord){450, 550}});
+        renderPerTile((Tile){(intCoord){0, 0}, (intCoord){image->Height(), image->Width()}});
         if ((i + 1) % 1 == 0) {
             evaluateRadiance(i + 1);
             char filename[100];
@@ -132,8 +131,6 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
             incoming = Vector3f::dot(*(hit.center) - p, hit.getNormal()) < 0;
             if (!incoming) refractiveIndex = 1. / refractiveIndex;
         }
-
-        if (hit.getMaterial()->brdf == WATER) std::cerr << incoming << " " << hit.getT() << std::endl;
         
         double cosThetaIn = -Vector3f::dot(ray.getDirection(), hit.getNormal());
         double cosThetaOut2 = 1 - (1 - Math::sqr(cosThetaIn)) / Math::sqr(refractiveIndex);
@@ -149,11 +146,11 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
                 trace(Ray(p + dr * Math::eps, dr), weight * hit.getMaterial()->texture->query(p) * s, depth + 1, hp);
             else {
                 Vector3f d = ray.getDirection() / refractiveIndex + hit.getNormal() * (cosThetaIn / refractiveIndex - cosThetaOut);
-                trace(Ray(p + d * Math::eps, d), weight * hit.getMaterial()->texture->query(p) * s, depth + 1, hp);                                    
+                trace(Ray(p + d * Math::eps, d), weight * hit.getMaterial()->texture->query(p) * s, depth + 1, hp);
             }
         }
         else {
-            trace(Ray(p + dr * Math::eps, dr), weight * hit.getMaterial()->texture->query(p) * s, depth + 1, hp);        
+            trace(Ray(p + dr * Math::eps, dr), weight * hit.getMaterial()->texture->query(p) * s, depth + 1, hp);
         }
     }
 }

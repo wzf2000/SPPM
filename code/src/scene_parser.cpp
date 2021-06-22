@@ -491,7 +491,7 @@ Mesh *SceneParser::parseTriangleMesh() {
     }
     assert (!strcmp(token, "}"));
     const char *ext = &filename[strlen(filename) - 4];
-    assert(!strcmp(ext, ".obj"));
+    assert(!strcmp(ext, ".obj") || !strcmp(ext, ".ply"));
     Mesh *answer = new Mesh(filename, current_material, center);
 
     return answer;

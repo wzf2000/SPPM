@@ -117,7 +117,7 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
                 if (Vector3f::dot(d, hit.getNormal()) < 0) d = d * -1;
                 if (a <= BRDFs[hit.getMaterial()->brdf].rho_d) {
                     trace(Ray(p + d * Math::eps, d), weight * hit.getMaterial()->texture->query(p) * s, depth + 1, hp);
-                }   
+                }
             }
         }    
         return;

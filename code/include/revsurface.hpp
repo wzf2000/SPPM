@@ -64,7 +64,6 @@ public:
     }
 
     bool intersect(const Ray &r, Hit &h, double tmin) override {
-        // (PA3 optional TODO): implement this for the ray-tracing routine using G-N iteration.
         bool result = false;
         for (auto face: surface.VF) {
             Triangle triangle(surface.VV[std::get<0>(face)], surface.VV[std::get<1>(face)], surface.VV[std::get<2>(face)], material);

@@ -5,8 +5,6 @@
 #include <vecmath.h>
 #include <cmath>
 
-// TODO: Implement functions and add more fields as necessary
-
 class Sphere : public Object3D {
 public:
     Sphere() : center(0, 0, 0), radius(0) {
@@ -32,14 +30,14 @@ public:
             Vector3f n = (r.getOrigin() + t * r.getDirection()) - center;
             n *= inside ? -1 : 1;
             n.normalize();
-            h.set(t, this->material, n);
+            h.set(t, this->material, n, new Vector3f(center));
         } else {
             double t_p = Vector3f::dot(l, r.getDirection());
             if (t_p <= 0) return false;
             double t = 2 * t_p;
             Vector3f n = center - (r.getOrigin() + t * r.getDirection());
             n.normalize();
-            h.set(t, this->material, n);
+            h.set(t, this->material, n, new Vector3f(center));
         }
         return true;
     }

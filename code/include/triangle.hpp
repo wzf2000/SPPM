@@ -2,14 +2,12 @@
 #define TRIANGLE_H
 
 #include "object3d.hpp"
+#include "mesh.hpp"
 #include <vecmath.h>
 #include <cmath>
 #include <iostream>
 using namespace std;
 
-class Mesh;
-
-// TODO: implement this class and add more fields as necessary,
 class Triangle: public Object3D {
 
 public:
@@ -42,9 +40,9 @@ public:
         if (beta < 0 || beta > 1 || gamma < 0 || gamma > 1 || beta + gamma > 1 || t < tmin || t > hit.getT())
             return false;
         if (Vector3f::dot(normal, ray.getDirection()) < 0)
-            hit.set(t, this->material, normal, par);
+            hit.set(t, this->material, normal, par->calcCenter());
         else
-            hit.set(t, this->material, -normal, par);
+            hit.set(t, this->material, -normal, par->calcCenter());
         return true;
     }
     double intersectPlane(const Ray &ray) {

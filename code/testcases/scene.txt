@@ -1,19 +1,21 @@
 
-PerspectiveCamera {
+FixedCamera {
     center 0 0 -1
-    direction 0 0 1
-    up 0 -1 0
-    angle1 63.3
-    angle2 72.3
+    fx 0.684
+    fy 0.811
+    aperture 0.001
+    focus 1.09
     width 1024
     height 768
 }
 
 Lights {
     numLights 1
-    DirectionalLight {
-        direction -0.5 -0.5 -0.5
-        color 0.9 0.9 0.9
+    PointLight {
+        sourceP 0 0.499999 0.2
+        sourceR 0.2
+        sourceN 0 -1 0
+        color 1 1 1
     }
 }
 
@@ -82,41 +84,81 @@ Background {
 }
 
 Group {
-    numObjects 7
+    numObjects 11
     MaterialIndex 0
-    TriangleMesh {
-	    obj_file obj/top.obj
+    Transform {
+        UniformScale 0.5
+        TriangleMesh {
+            obj_file obj/top.obj
+        }
     }
     MaterialIndex 5
-    TriangleMesh {
-	    obj_file obj/back.obj
+    Transform {
+        UniformScale 0.5
+        TriangleMesh {
+            obj_file obj/back.obj
+        }
     }
     MaterialIndex 6
-    TriangleMesh {
-	    obj_file obj/bottom.obj
+    Transform {
+        UniformScale 0.5
+        TriangleMesh {
+            obj_file obj/bottom.obj
+        }
     }
     MaterialIndex 7
-    TriangleMesh {
-	    obj_file obj/front.obj
+    Transform {
+        UniformScale 0.5
+        TriangleMesh {
+            obj_file obj/front.obj
+        }
     }
     MaterialIndex 8
-    TriangleMesh {
-	    obj_file obj/left.obj
+    Transform {
+        UniformScale 0.5
+        TriangleMesh {
+            obj_file obj/left.obj
+        }
     }
     MaterialIndex 9
-    TriangleMesh {
-	    obj_file obj/right.obj
+    Transform {
+        UniformScale 0.5
+        TriangleMesh {
+            obj_file obj/right.obj
+        }
     }
     MaterialIndex 11
     Transform {
-        Translate 0 1 0
         YRotate -15
         Translate 0.24 -0.59 0.12
-        Scale 2.8 -2.8 2.8
+        Scale 2.8 2.8 -2.8
         TriangleMesh {
-            obj_file obj/bunny_1k.obj
+            obj_file obj/bunny.fine.obj
         }
     }
-    
+    MaterialIndex 12
+    Transform {
+        Translate -0.6 -0.23731 -0.44902
+        Scale 0.217 0.2359 0.2144
+        TriangleMesh {
+            obj_file obj/water.ply
+            center 0 -1 0
+        }
+    }
+    MaterialIndex 2
+    Sphere {
+        center -0.32 -0.30 0.3
+        radius 0.18
+    }
+    MaterialIndex 1
+    Sphere {
+        center 0.42 0.20 0
+        radius 0.15
+    }
+    MaterialIndex 3
+    Disc {
+        center 0 0.499999 0.1
+        radius 0.2
+    }
 }
 

@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <vecmath.h>
+#include "ray.hpp"
 
 class Camera;
 class Light;
@@ -16,6 +17,7 @@ class Transform;
 class Mesh;
 class Curve;
 class RevSurface;
+class Disc;
 
 #define MAX_PARSER_TOKEN_LENGTH 1024
 
@@ -57,10 +59,13 @@ public:
         return group;
     }
 
+    std::pair<Ray, Vector3f> generateRay();
+
 private:
 
     void parseFile();
     void parsePerspectiveCamera();
+    void parseFixedCamera();
     void parseBackground();
     void parseLights();
     Light *parsePointLight();
@@ -70,6 +75,7 @@ private:
     Object3D *parseObject(char token[MAX_PARSER_TOKEN_LENGTH]);
     Group *parseGroup();
     Sphere *parseSphere();
+    Disc *parseDisc();
     Plane *parsePlane();
     Triangle *parseTriangle();
     Mesh *parseTriangleMesh();

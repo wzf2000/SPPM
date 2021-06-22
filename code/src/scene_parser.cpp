@@ -2,6 +2,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <cmath>
+#include <utility>
 
 #include "scene_parser.hpp"
 #include "camera.hpp"
@@ -11,6 +12,7 @@
 #include "group.hpp"
 #include "mesh.hpp"
 #include "sphere.hpp"
+#include "disc.hpp"
 #include "plane.hpp"
 #include "triangle.hpp"
 #include "transform.hpp"
@@ -86,7 +88,9 @@ void SceneParser::parseFile() {
     //
     char token[MAX_PARSER_TOKEN_LENGTH];
     while (getToken(token)) {
-        if (!strcmp(token, "PerspectiveCamera")) {
+        if (!strcmp(token, "FixedCamera")) {
+            parseFixedCamera();
+        } else if (!strcmp(token, "PerspectiveCamera")) {
             parsePerspectiveCamera();
         } else if (!strcmp(token, "Background")) {
             parseBackground();
@@ -137,6 +141,37 @@ void SceneParser::parsePerspectiveCamera() {
     getToken(token);
     assert (!strcmp(token, "}"));
     camera = new PerspectiveCamera(center, direction, up, width, height, angle_radians1, angle_radians2);
+}
+
+void SceneParser::parseFixedCamera() {
+    char token[MAX_PARSER_TOKEN_LENGTH];
+    // read in the camera parameters
+    getToken(token);
+    assert (!strcmp(token, "{"));
+    getToken(token);
+    assert (!strcmp(token, "center"));
+    Vector3f center = readVector3f();
+    getToken(token);
+    assert (!strcmp(token, "fx"));
+    double fx = readDouble();
+    getToken(token);
+    assert (!strcmp(token, "fy"));
+    double fy = readDouble();
+    getToken(token);
+    assert (!strcmp(token, "aperture"));
+    double aperture = readDouble();
+    getToken(token);
+    assert (!strcmp(token, "focus"));
+    double focus = readDouble();
+    getToken(token);
+    assert (!strcmp(token, "width"));
+    int width = readInt();
+    getToken(token);
+    assert (!strcmp(token, "height"));
+    int height = readInt();
+    getToken(token);
+    assert (!strcmp(token, "}"));
+    camera = new FixedCamera(center, fx, fy, aperture, focus, width, height);
 }
 
 void SceneParser::parseBackground() {
@@ -207,14 +242,20 @@ Light *SceneParser::parsePointLight() {
     getToken(token);
     assert (!strcmp(token, "{"));
     getToken(token);
-    assert (!strcmp(token, "position"));
-    Vector3f position = readVector3f();
+    assert (!strcmp(token, "center"));
+    Vector3f sourceP = readVector3f();
+    getToken(token);
+    assert (!strcmp(token, "sourceR"));
+    double sourceR = readDouble();
+    getToken(token);
+    assert (!strcmp(token, "sourceN"));
+    Vector3f sourceN = readVector3f();
     getToken(token);
     assert (!strcmp(token, "color"));
     Vector3f color = readVector3f();
     getToken(token);
     assert (!strcmp(token, "}"));
-    return new PointLight(position, color);
+    return new PointLight(sourceP, sourceR, sourceN, color);
 }
 // ====================================================================
 // ====================================================================
@@ -291,6 +332,8 @@ Object3D *SceneParser::parseObject(char token[MAX_PARSER_TOKEN_LENGTH]) {
         answer = (Object3D *) parseGroup();
     } else if (!strcmp(token, "Sphere")) {
         answer = (Object3D *) parseSphere();
+    } else if (!strcmp(token, "Disc")) {
+        answer = (Object3D *) parseDisc();
     } else if (!strcmp(token, "Plane")) {
         answer = (Object3D *) parsePlane();
     } else if (!strcmp(token, "Triangle")) {
@@ -378,6 +421,21 @@ Sphere *SceneParser::parseSphere() {
     return new Sphere(center, radius, current_material);
 }
 
+Disc *SceneParser::parseDisc() {
+    char token[MAX_PARSER_TOKEN_LENGTH];
+    getToken(token);
+    assert (!strcmp(token, "{"));
+    getToken(token);
+    assert (!strcmp(token, "center"));
+    Vector3f center = readVector3f();
+    getToken(token);
+    assert (!strcmp(token, "radius"));
+    double radius = readDouble();
+    getToken(token);
+    assert (!strcmp(token, "}"));
+    assert (current_material != nullptr);
+    return new Disc(center, radius, current_material);
+}
 
 Plane *SceneParser::parsePlane() {
     char token[MAX_PARSER_TOKEN_LENGTH];
@@ -418,6 +476,7 @@ Triangle *SceneParser::parseTriangle() {
 Mesh *SceneParser::parseTriangleMesh() {
     char token[MAX_PARSER_TOKEN_LENGTH];
     char filename[MAX_PARSER_TOKEN_LENGTH];
+    Vector3f *center = nullptr;
     // get the filename
     getToken(token);
     assert (!strcmp(token, "{"));
@@ -425,10 +484,15 @@ Mesh *SceneParser::parseTriangleMesh() {
     assert (!strcmp(token, "obj_file"));
     getToken(filename);
     getToken(token);
+    if (!strcmp(token, "center")) {
+        center = new Vector3f;
+        *center = readVector3f();
+        getToken(token);
+    }
     assert (!strcmp(token, "}"));
     const char *ext = &filename[strlen(filename) - 4];
     assert(!strcmp(ext, ".obj"));
-    Mesh *answer = new Mesh(filename, current_material);
+    Mesh *answer = new Mesh(filename, current_material, center);
 
     return answer;
 }
@@ -612,4 +676,9 @@ int SceneParser::readInt() {
         assert (0);
     }
     return answer;
+}
+
+std::pair<Ray, Vector3f> SceneParser::generateRay() {
+    int index = Math::random() * num_lights;
+    return std::make_pair(lights[index]->generateRay(), lights[index]->getColor());
 }

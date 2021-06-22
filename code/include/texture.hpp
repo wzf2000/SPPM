@@ -38,15 +38,15 @@ public:
         int _x = x * image->Height();
         int _y = y * image->Width();
         if (_x >= 0 && _x < image->Height() && _y >= 0 && _y < image->Width()) 
-            return image->GetPixel(_x, _y);
+            return image->GetPixel(_y, _x);
         else
             return Vector3f::ZERO;
     }
 
-    Vector3f query(Vector3f p) {
+    Vector3f query(const Vector3f &p) {
         if (!image) return color;
-        double x = Vector3f::dot(x, p) + xb;
-        double y = Vector3f::dot(y, p) + yb;
-        return query(x, y);
+        double xx = Vector3f::dot(x, p) + xb;
+        double yy = Vector3f::dot(y, p) + yb;
+        return query(xx, yy);
     }
 };

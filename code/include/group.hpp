@@ -9,7 +9,6 @@
 #include <vector>
 
 
-// TODO: Implement Group - add data structure to store a list of Object*
 class Group : public Object3D {
 
 public:

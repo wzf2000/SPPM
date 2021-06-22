@@ -3,8 +3,8 @@
 
 #include <vecmath.h>
 #include "ray.hpp"
+#include "material.hpp"
 
-class Material;
 class Mesh;
 
 class Hit {
@@ -43,13 +43,13 @@ public:
         return normal;
     }
 
-    void set(double _t, Material *m, const Vector3f &n, Mesh *o = nullptr) {
+    void set(double _t, Material *m, const Vector3f &n, Vector3f *c = nullptr) {
         t = _t;
         material = m;
         normal = n;
-        object = o;
+        center = c;
     }
-    Mesh *object;
+    Vector3f *center = nullptr;
 
 private:
     double t;

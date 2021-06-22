@@ -1,10 +1,27 @@
 #include "mesh.hpp"
+#include "triangle.hpp"
 #include <fstream>
 #include <iostream>
 #include <algorithm>
 #include <cstdlib>
 #include <utility>
 #include <sstream>
+#include <cstring>
+#include <vector>
+
+static std::vector<std::string> split(char *str) {
+    std::vector<std::string> ret;
+    std::string cur = "";
+    for (int i = 0; str[i]; ++i) {
+        if (str[i] == ' ' || str[i] == '\n' || str[i] == '\r') {
+            if (cur != "") ret.emplace_back(cur);
+            cur = "";
+        }
+        else cur += str[i];
+    }
+    if (cur != "") ret.emplace_back(cur);
+    return ret;
+}
 
 bool Mesh::intersect(const Ray &r, Hit &h, double tmin) {
 
@@ -20,7 +37,7 @@ bool Mesh::intersect(const Ray &r, Hit &h, double tmin) {
     return kdtree->intersect(kdtree->root, r, h, tmin);
 }
 
-Mesh::Mesh(const char *filename, Material *material) : Object3D(material) {
+Mesh::Mesh(const char *filename, Material *material, Vector3f *center) : Object3D(material), center(center) {
 
     // Optional: Use tiny obj loader to replace this simple one.
     std::ifstream f;
@@ -29,53 +46,85 @@ Mesh::Mesh(const char *filename, Material *material) : Object3D(material) {
         std::cout << "Cannot open " << filename << "\n";
         return;
     }
-    std::string line;
-    std::string vTok("v");
-    std::string fTok("f");
-    std::string texTok("vt");
-    char bslash = '/', space = ' ';
-    std::string tok;
-    int texID;
-    while (true) {
-        std::getline(f, line);
-        if (f.eof()) {
-            break;
-        }
-        if (line.size() < 3) {
-            continue;
-        }
-        if (line.at(0) == '#') {
-            continue;
-        }
-        std::stringstream ss(line);
-        ss >> tok;
-        if (tok == vTok) {
-            Vector3f vec;
-            ss >> vec[0] >> vec[1] >> vec[2];
-            v.push_back(vec);
-        } else if (tok == fTok) {
-            if (line.find(bslash) != std::string::npos) {
-                std::replace(line.begin(), line.end(), bslash, space);
-                std::stringstream facess(line);
-                TriangleIndex trig;
-                facess >> tok;
-                for (int ii = 0; ii < 3; ii++) {
-                    facess >> trig[ii] >> texID;
-                    trig[ii]--;
-                }
-                t.push_back(trig);
-            } else {
-                TriangleIndex trig;
-                for (int ii = 0; ii < 3; ii++) {
-                    ss >> trig[ii];
-                    trig[ii]--;
-                }
-                t.push_back(trig);
+    int len = strlen(filename);
+    if(strcmp(".obj", filename + len - 4) == 0) {
+        std::string line;
+        std::string vTok("v");
+        std::string fTok("f");
+        std::string texTok("vt");
+        char bslash = '/', space = ' ';
+        std::string tok;
+        int texID;
+        while (true) {
+            std::getline(f, line);
+            if (f.eof()) {
+                break;
             }
-        } else if (tok == texTok) {
-            Vector2f texcoord;
-            ss >> texcoord[0];
-            ss >> texcoord[1];
+            if (line.size() < 3) {
+                continue;
+            }
+            if (line.at(0) == '#') {
+                continue;
+            }
+            std::stringstream ss(line);
+            ss >> tok;
+            if (tok == vTok) {
+                Vector3f vec;
+                ss >> vec[0] >> vec[1] >> vec[2];
+                v.push_back(vec);
+            } else if (tok == fTok) {
+                if (line.find(bslash) != std::string::npos) {
+                    std::replace(line.begin(), line.end(), bslash, space);
+                    std::stringstream facess(line);
+                    TriangleIndex trig;
+                    facess >> tok;
+                    for (int ii = 0; ii < 3; ii++) {
+                        facess >> trig[ii] >> texID;
+                        trig[ii]--;
+                    }
+                    t.push_back(trig);
+                } else {
+                    TriangleIndex trig;
+                    for (int ii = 0; ii < 3; ii++) {
+                        ss >> trig[ii];
+                        trig[ii]--;
+                    }
+                    t.push_back(trig);
+                }
+            } else if (tok == texTok) {
+                Vector2f texcoord;
+                ss >> texcoord[0];
+                ss >> texcoord[1];
+            }
+        }
+    }
+    else if (strcmp(".ply", filename + len - 4) == 0) {
+        char buffer[1024];
+        int n, faces;
+        while (f.getline(buffer, 1024)) {
+            if (string(buffer) == "end_header") break;
+            std::vector<std::string> tokens = split(buffer);
+            if (tokens[0] == "element") {
+                if (tokens[1] == "vertex")
+                    n = std::stoi(tokens[2]);
+                else if (tokens[1] == "face")
+                    faces = std::stoi(tokens[2]);
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            Vector3f vec;
+            f >> vec[0] >> vec[1] >> vec[2];
+            f.getline(buffer, 1024);
+            v.emplace_back(vec);
+        }
+        for (int i = 0; i < faces; ++i) {
+            TriangleIndex trig;
+            int num;
+            f >> num;
+            if (num != 3)
+                throw runtime_error("Only trangle are supported!");
+            f >> trig[0] >> trig[1] >> trig[2];
+            t.emplace_back(trig);
         }
     }
     computeNormal();
@@ -99,9 +148,11 @@ void Mesh::computeNormal() {
     }
 }
 
-void Mesh::calcCenter() {
+Vector3f *Mesh::calcCenter() {
+    if (center) return center;
     center = new Vector3f(0);
     for (auto &vertex : v)
         *center = *center + vertex;
     *center = *center / v.size();
+    return center;
 }

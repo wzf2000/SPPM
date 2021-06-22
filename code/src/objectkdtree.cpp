@@ -1,4 +1,5 @@
 #include "objectkdtree.hpp"
+#include "triangle.hpp"
 
 bool ObjectKDTreeNode::inside(Triangle *face) {
     Vector3f faceMin = face->min();
@@ -27,6 +28,7 @@ ObjectKDTreeNode *ObjectKDTree::build(int depth, int d, vector<Triangle*> &faces
         maxL = Vector3f(p->maxCoord.x(), p->maxCoord.y(), (p->minCoord.z() + p->maxCoord.z()) / 2);
         minR = Vector3f(p->minCoord.x(), p->minCoord.y(), (p->minCoord.z() + p->maxCoord.z()) / 2);
     }
+    p->faces.clear();
     for (auto face : faces)
         if (p->inside(face))
             p->faces.emplace_back(face);
@@ -42,26 +44,17 @@ ObjectKDTreeNode *ObjectKDTree::build(int depth, int d, vector<Triangle*> &faces
         p->rs->faces.clear();
         p->faces.clear();
         for (auto face : faceL)
-            if (cnt[face] == 1) 
+            if (cnt[face] == 1)
                 p->ls->faces.emplace_back(face);
             else
                 p->faces.emplace_back(face);
         for (auto face : faceR)
-            if (cnt[face] == 1) 
+            if (cnt[face] == 1)
                 p->rs->faces.emplace_back(face);
     }
     else
         p->ls = p->rs = nullptr;
     return p;
-}
-
-void ObjectKDTree::getFaces(ObjectKDTreeNode *p, vector<Triangle*> &faces) {
-    p->l = faces.size();
-    for (auto face : p->faces)
-        faces.emplace_back(face);
-    p->r = faces.size();
-    if (p->ls) getFaces(p->ls, faces);
-    if (p->rs) getFaces(p->rs, faces);
 }
 
 ObjectKDTree::ObjectKDTree(vector<Triangle*> faces) {
@@ -72,8 +65,6 @@ ObjectKDTree::ObjectKDTree(vector<Triangle*> faces) {
         maxCoord = ::max(maxCoord, face->max());
     }
     root = build(1, 0, faces, minCoord, maxCoord);
-    this->faces.clear();
-    getFaces(root, this->faces);
 }
 
 double ObjectKDTree::getCuboidIntersection(ObjectKDTreeNode *p, const Ray &ray) {

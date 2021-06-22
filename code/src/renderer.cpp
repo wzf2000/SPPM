@@ -7,8 +7,9 @@
 #include "triangle.hpp"
 #include "brdf.hpp"
 #include "mesh.hpp"
+#include <utility>
 
-Renderer::Renderer(SceneParser *scene) : scene(scene), light(1), aperture(1e-3), focus(1.09), kdtree(nullptr) {
+Renderer::Renderer(SceneParser *scene) : scene(scene), aperture(1e-3), focus(1.09), kdtree(nullptr) {
     numPhotons = 200000;
     camera = scene->getCamera();
     image = new Image(camera->getWidth(), camera->getHeight());
@@ -21,7 +22,7 @@ void Renderer::evaluateRadiance(int numRounds) {
     for (int y = 0; y < image->Width(); ++y)
         for (int x = 0; x < image->Height(); ++x) {
             HitPoint *hp = hitPoints[y * image->Height() + x];
-            Vector3f color =  hp->flux / (M_PI * hp->r2 * numPhotons * numRounds) + light * hp->fluxLight / numRounds;
+            Vector3f color =  hp->flux / (M_PI * hp->r2 * numPhotons * numRounds) + Vector3f(1) * hp->fluxLight / numRounds;
             color.x() = std::pow(color.x(), Math::gamma);
             color.y() = std::pow(color.y(), Math::gamma);
             color.z() = std::pow(color.z(), Math::gamma);
@@ -53,7 +54,7 @@ void Renderer::renderPerTile(Tile tile) {
             double t = triangle.intersectPlane(camRay);
             Vector3f focusP = camRay.getOrigin() + camRay.getDirection() * t;
             double theta = Math::random(0, 2 * M_PI);
-            Ray ray(camRay.getOrigin() + Vector3f(cos(theta), sin(theta), 0) * aperture, (focusP - (camRay.getOrigin() + Vector3f(cos(theta), sin(theta), 0) * aperture)).normalized());
+            Ray ray(camRay.getOrigin() + Vector3f(cos(theta), sin(theta), 0) * aperture, (focusP - (camRay.getOrigin() + Vector3f(cos(theta), sin(theta), 0) * aperture)));
             hitPoints[y * image->Height() + x]->valid = false;
             hitPoints[y * image->Height() + x]->dir = -1 * ray.getDirection();
             trace(ray, Vector3f(1), 1, hitPoints[y * image->Height() + x]);
@@ -64,8 +65,10 @@ void Renderer::renderPerTile(Tile tile) {
     Vector3f weight_init = 2.5;
     #pragma omp parallel for schedule(dynamic, 128), num_threads(8)
     for (int i = 0; i < numPhotons; ++i) {
-        Ray camRay = camera->generateRay();
-        trace(camRay, weight_init * light, 1);
+        std::pair<Ray, Vector3f> camRay = scene->generateRay();
+        Ray ray = camRay.first;
+        Vector3f light = camRay.second;
+        trace(ray, weight_init * light, 1);
     }
     fprintf(stderr, "\rPhoton tracing pass done\n");
 }
@@ -75,8 +78,8 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
     Group *group = scene->getGroup();
     Hit hit;
     bool flag = group->intersect(ray, hit, 0);
-    Vector3f p = ray.getOrigin() + ray.getDirection() * hit.getT();
     if (!hit.getMaterial() || !hp && hit.getT() < 1e-3) return;
+    Vector3f p = ray.getOrigin() + ray.getDirection() * hit.getT();
     double s = BRDFs[hit.getMaterial()->brdf].specular + BRDFs[hit.getMaterial()->brdf].diffuse + BRDFs[hit.getMaterial()->brdf].refraction;
     double action = s * Math::random(0, 1);
     Vector3f dr = ray.getDirection() - hit.getNormal() * (2 * Vector3f::dot(ray.getDirection(), hit.getNormal()));
@@ -124,10 +127,8 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
     if (BRDFs[hit.getMaterial()->brdf].refraction > 0 && action <= BRDFs[hit.getMaterial()->brdf].refraction) {
         double refractiveIndex = BRDFs[hit.getMaterial()->brdf].refractiveIndex;
         bool incoming = false;
-        if (hit.object) {
-            if (!hit.object->center) 
-                hit.object->calcCenter();
-            incoming = Vector3f::dot(*(hit.object->center) - p, hit.getNormal()) < 0;
+        if (hit.center) {
+            incoming = Vector3f::dot(*(hit.center) - p, hit.getNormal()) < 0;
             if (!incoming) refractiveIndex = 1. / refractiveIndex;
         }
         

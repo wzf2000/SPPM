@@ -14,7 +14,6 @@ static Vector3f transformDirection(const Matrix4f &mat, const Vector3f &dir) {
     return (mat * Vector4f(dir, 0)).xyz();
 }
 
-// TODO: implement this class so that the intersect function first transforms the ray
 class Transform : public Object3D {
 public:
     Transform() = delete;
@@ -34,7 +33,7 @@ public:
         Ray tr(trSource, trDirection);
         bool inter = o->intersect(tr, h, tmin);
         if (inter) {
-            h.set(h.getT() / length, h.getMaterial(), transformDirection(transform.transposed(), h.getNormal()).normalized());
+            h.set(h.getT() / length, h.getMaterial(), transformDirection(transform.transposed(), h.getNormal()).normalized(), h.center);
         }
         return inter;
     }

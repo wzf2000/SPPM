@@ -109,4 +109,7 @@ Vector3f max(const Vector3f &a, const Vector3f &b);
 
 std::ostream &operator<<(std::ostream &os, const Vector3f &v);
 
+bool operator<=(const Vector3f &a, const Vector3f &b);
+bool operator>=(const Vector3f &a, const Vector3f &b);
+
 #endif // VECTOR_3F_H

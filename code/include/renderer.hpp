@@ -22,7 +22,6 @@ class Renderer {
     std::vector<HitPoint*> hitPoints;
     KDTree *kdtree;
     int numPhotons;
-    Vector3f light;
     double aperture;
     double focus;
 public:

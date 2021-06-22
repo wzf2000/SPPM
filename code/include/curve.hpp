@@ -9,7 +9,6 @@
 
 #include <algorithm>
 
-// TODO (PA3): Implement Bernstein class to compute spline basis function.
 //       You may refer to the python-script for implementation.
 
 // The CurvePoint object stores information about a point on a curve
@@ -94,7 +93,6 @@ public:
 
     void discretize(int resolution, std::vector<CurvePoint>& data) override {
         data.clear();
-        // TODO (PA3): fill in data vector
         for (int ti = 0; ti <= (n + 1) * resolution; ++ti) {
             double t = 1. * ti / resolution / (n + 1);
             data.push_back(getVT(t));
@@ -156,7 +154,6 @@ public:
 
     void discretize(int resolution, std::vector<CurvePoint>& data) override {
         data.clear();
-        // TODO (PA3): fill in data vector
         for (int ti = k * resolution; ti <= (n + 1) * resolution; ++ti) {
             double t = 1. * ti / resolution / (n + k + 1);
             data.push_back(getVT(t));

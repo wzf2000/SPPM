@@ -22,7 +22,6 @@ public:
 
     // Generate rays for each screen-space coordinate
     virtual Ray generateRay(const Vector2f &point) = 0;
-    virtual Ray generateRay() = 0;
     virtual ~Camera() = default;
 
     int getWidth() const { return width; }
@@ -41,7 +40,6 @@ protected:
     int height;
 };
 
-// TODO: Implement Perspective camera
 // You can add new functions or variables whenever needed.
 class PerspectiveCamera : public Camera {
 
@@ -51,7 +49,6 @@ public:
         // angle is in radian.
         fy = (double) height / (2 * tanf32x(angle1 / 2));
         fx = (double) width / (2 * tanf32x(angle2 / 2));
-        std::cerr << fx / width << " " << fy / height << std::endl;
         cx = width / 2.0f;
         cy = height / 2.0f;
     }
@@ -67,20 +64,32 @@ public:
         return ray;
     }
 
-    Ray generateRay() override {
-        double alpha = Math::random(0, 2 * M_PI);
-        Vector3f s = center +  Vector3f(cos(alpha), 0, sin(alpha)) * 0.2;
-        Vector3f d = Math::sampleReflectedRay(0.2);
-        d.normalize();
-        return Ray(s + d * Math::eps, d);
-    }
-
     friend class Renderer;
 
 private:
     double fx, fy;
     double cx, cy;
 
+};
+
+class FixedCamera : public Camera {
+public:
+    FixedCamera(const Vector3f &center, double fx, double fy, double aperture, double focus, int imgW, int imgH) : Camera(center, Vector3f::UP, Vector3f::FORWARD, imgW, imgH), fx(fx), fy(fy), aperture(aperture), focus(focus) {}
+
+    Ray generateRay(const Vector2f &point) override {
+        int cx = width / 2, cy = height / 2;
+        double csx = (point.x() - cx) / fx / width;
+        double csy = (point.y() - cy) / fy / height;
+        Vector3f p(csx, csy, 0);
+        Vector3f dir = p - center;
+        return Ray(center, dir);
+    }
+
+    friend class Renderer;
+
+private:
+    double fx, fy;
+    double aperture, focus;
 };
 
 #endif //CAMERA_H

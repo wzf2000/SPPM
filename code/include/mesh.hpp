@@ -3,16 +3,17 @@
 
 #include <vector>
 #include "object3d.hpp"
-#include "triangle.hpp"
 #include "Vector2f.h"
 #include "Vector3f.h"
 #include "objectkdtree.hpp"
+
+class Triangle;
 
 
 class Mesh : public Object3D {
 
 public:
-    Mesh(const char *filename, Material *m);
+    Mesh(const char *filename, Material *m, Vector3f *center = nullptr);
 
     struct TriangleIndex {
         TriangleIndex() {
@@ -29,7 +30,7 @@ public:
     std::vector<Triangle*> faces;
     ObjectKDTree *kdtree;
     Vector3f *center = nullptr;
-    void calcCenter();
+    Vector3f *calcCenter();
     bool intersect(const Ray &r, Hit &h, double tmin) override;
 
 private:

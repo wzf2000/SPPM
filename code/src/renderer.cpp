@@ -49,7 +49,7 @@ void Renderer::renderPerTile(Tile tile) {
     Triangle triangle(Vector3f(0, 0, camera->center.z() + focus), Vector3f(0, 1, camera->center.z() + focus), Vector3f(1, 0, camera->center.z() + focus), nullptr);
     for (int y = tile.begin.y; y < tile.end.y; ++y) {
         fprintf(stderr, "\rRay tracing pass %.3lf%%", y * 100. / image->Width());
-        #pragma omp parallel for schedule(dynamic, 60), num_threads(8)
+        #pragma omp parallel for schedule(dynamic, 60), num_threads(12)
         for (int x = tile.begin.x; x < tile.end.x; ++x) {
             Ray camRay = camera->generateRay(Vector2f(y, x));
             double t = triangle.intersectPlane(camRay);
@@ -64,7 +64,7 @@ void Renderer::renderPerTile(Tile tile) {
     fprintf(stderr, "\rRay tracing pass 100.000%%\n");
     initHitKDTree();
     Vector3f weight_init = 2.5;
-    #pragma omp parallel for schedule(dynamic, 128), num_threads(8)
+    #pragma omp parallel for schedule(dynamic, 128), num_threads(12)
     for (int i = 0; i < numPhotons; ++i) {
         std::pair<Ray, Vector3f> camRay = scene->generateRay();
         Ray ray = camRay.first;
@@ -100,7 +100,7 @@ static inline void generate_cartesian(Vector3f &u, Vector3f &v, const Vector3f &
     v = Vector3f::cross(w, u);
 }
 
-static inline double scatter(const Ray &r, Ray *scatter_ray, double t_near, double t_far, double &s) {
+static inline double scatter(const Ray &r, Ray *&scatter_ray, double t_near, double t_far, double &s) {
     s = sample_segment(Math::random(), t_far - t_near);
     Vector3f x = r.pointAtParameter(t_near) + r.getDirection() * s;
     Vector3f dir = sampleHG(-0.5, Math::random(), Math::random());

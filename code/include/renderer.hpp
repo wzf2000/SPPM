@@ -13,7 +13,10 @@
 #include "hit.hpp"
 #include "kdtree.hpp"
 
-const int maxDepth = 10;
+constexpr int maxDepth = 10;
+constexpr double sigma_s = 0.025;
+constexpr double sigma_a = 0.015;
+constexpr double sigma_t = sigma_s + sigma_a;
 
 class Renderer {
     SceneParser *scene;
@@ -21,6 +24,7 @@ class Renderer {
     Image *image;
     std::vector<HitPoint*> hitPoints;
     KDTree *kdtree;
+    Sphere *media;
     int numPhotons;
     double aperture;
     double focus;

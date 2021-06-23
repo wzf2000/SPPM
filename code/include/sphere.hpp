@@ -42,6 +42,18 @@ public:
         return true;
     }
 
+    bool intersect_media(const Ray &r, double &t_near, double &t_far) {
+        Vector3f l = center - r.getOrigin();
+        Vector3f dir = r.getDirection();
+        double b = Vector3f::dot(l, dir);
+        double det = Math::sqr(b) - l.squaredLength() + Math::sqr(radius);
+        if (det < 0) return false;
+        else det = sqrt(det);
+        t_near = (b - det <= 0) ? 0 : b - det;
+        t_far = b + det;
+        return b - det > 1e-4 ? true : (b + det > 1e-4 ? true : false);
+    }
+
 protected:
     Vector3f center;
     double radius;

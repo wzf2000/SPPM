@@ -40,9 +40,9 @@ public:
         if (beta < 0 || beta > 1 || gamma < 0 || gamma > 1 || beta + gamma > 1 || t < tmin || t > hit.getT())
             return false;
         if (Vector3f::dot(normal, ray.getDirection()) < 0)
-            hit.set(t, this->material, normal, par->calcCenter());
+            hit.set(t, this->material, normal, par->calcCenter(), material->texture->query(ray.pointAtParameter(t)));
         else
-            hit.set(t, this->material, -normal, par->calcCenter());
+            hit.set(t, this->material, -normal, par->calcCenter(), material->texture->query(ray.pointAtParameter(t)));
         return true;
     }
 

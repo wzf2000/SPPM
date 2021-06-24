@@ -87,7 +87,7 @@ public:
         ++Renderer::count;
         if (!isnormal(mu) || !isnormal(theta) || !isnormal(t)) return false;
         if (t < tmin || t > h.getT() || mu < pCurve->range[0] || mu > pCurve->range[1]) return false;
-        h.set(t, material, normal.normalized(), bound.getCenter());
+        h.set(t, material, normal.normalized(), bound.getCenter(), material->texture->getColor(theta / (2 * M_PI), mu));
         return true;
     }
 

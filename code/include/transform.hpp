@@ -37,9 +37,9 @@ public:
         if (inter && hh.getT() / length < h.getT()) {
             if (hh.center) {
                 center = transformPoint(origin, *hh.center);
-                h.set(hh.getT() / length, hh.getMaterial(), transformDirection(transform.transposed(), hh.getNormal()).normalized(), &center);
+                h.set(hh.getT() / length, hh.getMaterial(), transformDirection(transform.transposed(), hh.getNormal()).normalized(), &center, hh.color);
             }
-            else h.set(hh.getT() / length, hh.getMaterial(), transformDirection(transform.transposed(), hh.getNormal()).normalized());
+            else h.set(hh.getT() / length, hh.getMaterial(), transformDirection(transform.transposed(), hh.getNormal()).normalized(), nullptr, hh.color);
             return true;
         }
         return false;

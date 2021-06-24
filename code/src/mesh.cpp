@@ -37,7 +37,7 @@ Mesh::Mesh(const char *filename, Material *material, Vector3f *center) : Object3
         return;
     }
     int len = strlen(filename);
-    if(strcmp(".obj", filename + len - 4) == 0) {
+    if (strcmp(".obj", filename + len - 4) == 0) {
         std::string line;
         std::string vTok("v");
         std::string fTok("f");

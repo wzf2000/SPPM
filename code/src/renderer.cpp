@@ -169,7 +169,7 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
     // Specular
     if (BRDFs[hit.getMaterial()->brdf].specular > 0 && action <= BRDFs[hit.getMaterial()->brdf].specular) {
         if (incoming) ss = ss * absorption;
-        trace(Ray(p, dr), weight * hit.getMaterial()->texture->query(p) * ss, depth + 1, hp);
+        trace(Ray(p, dr), weight * hit.color * ss, depth + 1, hp);
         return;
     }
     action -= BRDFs[hit.getMaterial()->brdf].specular;
@@ -180,7 +180,7 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
         if (hp) {
             // ++count;
             hp->p = p;
-            hp->weight = weight * hit.getMaterial()->texture->query(p) * ss;
+            hp->weight = weight * hit.color * ss;
             hp->fluxLight = hp->fluxLight + hp->weight * hit.getMaterial()->emission;
             hp->brdf = BRDFs[hit.getMaterial()->brdf];
             hp->norm = hit.getNormal();
@@ -190,7 +190,7 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
             // phong specular
             if (a <= BRDFs[hit.getMaterial()->brdf].rho_s) {
                 Vector3f d = Math::sampleReflectedRay(dr, BRDFs[hit.getMaterial()->brdf].phong_s);
-                trace(Ray(p, d), weight * hit.getMaterial()->texture->query(p) * ss, depth + 1, hp);
+                trace(Ray(p, d), weight * hit.color * ss, depth + 1, hp);
             }
             else {
                 // ++count;
@@ -199,7 +199,7 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
                 Vector3f d = Math::sampleReflectedRay(hit.getNormal());
                 if (Vector3f::dot(d, hit.getNormal()) < 0) d = d * -1;
                 if (a <= BRDFs[hit.getMaterial()->brdf].rho_d) {
-                    trace(Ray(p, d), weight * hit.getMaterial()->texture->query(p) * ss, depth + 1, hp);
+                    trace(Ray(p, d), weight * hit.color * ss, depth + 1, hp);
                 }
             }
         }
@@ -223,14 +223,14 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
             double R = R0 + (1 - R0) * pow(1 - cosTheta, 5);
             
             if (Math::random() <= R)
-                trace(Ray(p, dr), weight * hit.getMaterial()->texture->query(p) * ss, depth + 1, hp);
+                trace(Ray(p, dr), weight * hit.color * ss, depth + 1, hp);
             else {
                 Vector3f d = ray.getDirection() / refractiveIndex + hit.getNormal() * (cosThetaIn / refractiveIndex - cosThetaOut);
-                trace(Ray(p, d), weight * hit.getMaterial()->texture->query(p) * ss, depth + 1, hp);
+                trace(Ray(p, d), weight * hit.color * ss, depth + 1, hp);
             }
         }
         else {
-            trace(Ray(p, dr), weight * hit.getMaterial()->texture->query(p) * ss, depth + 1, hp);
+            trace(Ray(p, dr), weight * hit.color * ss, depth + 1, hp);
         }
     }
 }

@@ -30,14 +30,14 @@ public:
             Vector3f n = (r.getOrigin() + t * r.getDirection()) - center;
             n *= inside ? -1 : 1;
             n.normalize();
-            h.set(t, this->material, n, &center);
+            h.set(t, this->material, n, &center, material->texture->query(r.pointAtParameter(t)));
         } else {
             double t_p = Vector3f::dot(l, r.getDirection());
             if (t_p <= 0) return false;
             double t = 2 * t_p;
             Vector3f n = center - (r.getOrigin() + t * r.getDirection());
             n.normalize();
-            h.set(t, this->material, n, &center);
+            h.set(t, this->material, n, &center, material->texture->query(r.pointAtParameter(t)));
         }
         return true;
     }

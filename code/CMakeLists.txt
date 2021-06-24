@@ -25,7 +25,8 @@ SET(PROJECT_SOURCES
         src/scene_parser.cpp
         src/kdtree.cpp
         src/math.cpp
-        src/objectkdtree.cpp)
+        src/objectkdtree.cpp
+        src/texture.cpp)
 
 SET(PROJECT_INCLUDES
         include/camera.hpp
@@ -51,6 +52,7 @@ SET(PROJECT_INCLUDES
         include/objectkdtree.hpp
         include/disc.hpp
         include/bound.hpp
+        include/stb_image.h
         )
 
 SET(CMAKE_CXX_STANDARD 11)

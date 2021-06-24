@@ -23,9 +23,9 @@ public:
         double t = (d - Vector3f::dot(normal, r.getOrigin())) / x;
         if (t < tmin || t > h.getT()) return false;
         if (Vector3f::dot(normal, r.getDirection()) < 0)
-            h.set(t, this->material, normal);
+            h.set(t, this->material, normal, nullptr, material->texture->query(r.pointAtParameter(t)));
         else
-            h.set(t, this->material, -normal);
+            h.set(t, this->material, -normal, nullptr, material->texture->query(r.pointAtParameter(t)));
         return true;
     }
 

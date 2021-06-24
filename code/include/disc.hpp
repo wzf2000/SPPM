@@ -25,10 +25,18 @@ public:
         if (t > h.getT() || t < tmin) return false;
         Vector3f p = r.getOrigin() + r.getDirection() * t;
         if (Math::sqr(p.x() - center.x()) + Math::sqr(p.z() - center.z()) <= radius * radius) {
-            h.set(t, material, Vector3f(0, -1, 0));
+            h.set(t, material, Vector3f(0, -1, 0), nullptr, material->texture->query(r.pointAtParameter(t)));
             return true;
         }
         else return false;
+    }
+
+    Ray generateRandomRay() const override {
+        double alpha = Math::random(0, 2 * M_PI);
+        Vector3f s = center +  Vector3f(cos(alpha), 0, sin(alpha)) * 0.2;
+        Vector3f d = Math::sampleReflectedRay(Vector3f(0, -1, 0));
+        d.normalize();
+        return Ray(s + d * Math::eps, d);
     }
 
 protected:

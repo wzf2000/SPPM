@@ -40,17 +40,27 @@ public:
         if (beta < 0 || beta > 1 || gamma < 0 || gamma > 1 || beta + gamma > 1 || t < tmin || t > hit.getT())
             return false;
         if (Vector3f::dot(normal, ray.getDirection()) < 0)
-            hit.set(t, this->material, normal, par->calcCenter());
+            hit.set(t, this->material, normal, par->calcCenter(), material->texture->query(ray.pointAtParameter(t)));
         else
-            hit.set(t, this->material, -normal, par->calcCenter());
+            hit.set(t, this->material, -normal, par->calcCenter(), material->texture->query(ray.pointAtParameter(t)));
         return true;
     }
+
     double intersectPlane(const Ray &ray) {
         Vector3f E1 = vertices[0] - vertices[1], E2 = vertices[0] - vertices[2], S = vertices[0] - ray.getOrigin();
         double t = Matrix3f(S, E1, E2).determinant();
         double n = Matrix3f(ray.getDirection(), E1, E2).determinant();
         t /= n;
         return t;
+    }
+
+    Ray generateRandomRay() const override {
+        double r1 = Math::random(), r2 = Math::random();
+        if (r1 + r2 > 1) {
+            r1 = 1 - r1;
+            r2 = 1 - r2;
+        }
+        return Ray(r1 * vertices[1] + r2 * vertices[2] + (1 - r1 - r2) * vertices[0], Math::sampleReflectedRay(normal));
     }
 
     Vector3f normal;

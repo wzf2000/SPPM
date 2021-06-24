@@ -24,16 +24,6 @@ static std::vector<std::string> split(char *str) {
 }
 
 bool Mesh::intersect(const Ray &r, Hit &h, double tmin) {
-
-    // Optional: Change this brute force method into a faster one.
-    // bool result = false;
-    // for (int triId = 0; triId < (int) t.size(); ++triId) {
-    //     TriangleIndex& triIndex = t[triId];
-    //     Triangle triangle(v[triIndex[0]], v[triIndex[1]], v[triIndex[2]], material, this);
-    //     triangle.normal = n[triId];
-    //     result |= triangle.intersect(r, h, tmin);
-    // }
-    // return result;
     return kdtree->intersect(kdtree->root, r, h, tmin);
 }
 
@@ -47,7 +37,7 @@ Mesh::Mesh(const char *filename, Material *material, Vector3f *center) : Object3
         return;
     }
     int len = strlen(filename);
-    if(strcmp(".obj", filename + len - 4) == 0) {
+    if (strcmp(".obj", filename + len - 4) == 0) {
         std::string line;
         std::string vTok("v");
         std::string fTok("f");
@@ -150,9 +140,14 @@ void Mesh::computeNormal() {
 
 Vector3f *Mesh::calcCenter() {
     if (center) return center;
-    center = new Vector3f(0);
+    center = new Vector3f(Vector3f::ZERO);
     for (auto &vertex : v)
         *center = *center + vertex;
     *center = *center / v.size();
     return center;
+}
+
+Ray Mesh::generateRandomRay() const {
+    int index = Math::random() * faces.size();
+    return faces[index]->generateRandomRay();
 }

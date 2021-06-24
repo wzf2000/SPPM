@@ -18,8 +18,9 @@ class Transform : public Object3D {
 public:
     Transform() = delete;
 
-    Transform(const Matrix4f &m, Object3D *obj) : o(obj) {
+    Transform(const Matrix4f &m, Object3D *obj, Material *material) : Object3D(material), o(obj) {
         transform = m.inverse();
+        origin = m;
     }
 
     ~Transform() {
@@ -34,7 +35,11 @@ public:
         Hit hh;
         bool inter = o->intersect(tr, hh, tmin);
         if (inter && hh.getT() / length < h.getT()) {
-            h.set(hh.getT() / length, hh.getMaterial(), transformDirection(transform.transposed(), hh.getNormal()).normalized(), hh.center);
+            if (hh.center) {
+                center = transformPoint(origin, *hh.center);
+                h.set(hh.getT() / length, hh.getMaterial(), transformDirection(transform.transposed(), hh.getNormal()).normalized(), &center, hh.color);
+            }
+            else h.set(hh.getT() / length, hh.getMaterial(), transformDirection(transform.transposed(), hh.getNormal()).normalized(), nullptr, hh.color);
             return true;
         }
         return false;
@@ -42,7 +47,8 @@ public:
 
 protected:
     Object3D *o; //un-transformed object
-    Matrix4f transform;
+    Matrix4f transform, origin;
+    Vector3f center;
 };
 
 #endif //TRANSFORM_H

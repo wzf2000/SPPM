@@ -28,6 +28,10 @@ public:
     }
 
     const Vector3f &GetPixel(int x, int y) const {
+        x = std::max(x, 0);
+        x = std::min(x, width - 1);
+        y = std::max(y, 0);
+        y = std::min(y, height - 1);
         assert(x >= 0 && x < width);
         assert(y >= 0 && y < height);
         return data[y * width + x];

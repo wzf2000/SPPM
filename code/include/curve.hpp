@@ -23,7 +23,19 @@ class Curve : public Object3D {
 protected:
     std::vector<Vector3f> controls;
 public:
-    explicit Curve(std::vector<Vector3f> points) : controls(std::move(points)) {}
+    double ymin, ymax, radius;
+    double range[2];
+
+    explicit Curve(std::vector<Vector3f> points) : controls(std::move(points)) {
+        ymin = 1e100, ymax = -1e100;
+        radius = 0;
+        for (auto &point : controls) {
+            ymin = std::min(point.y(), ymin);
+            ymax = std::max(point.y(), ymax);
+            radius = max(radius, fabs(point.x()));
+            radius = max(radius, fabs(point.z()));
+        }
+    }
 
     bool intersect(const Ray &r, Hit &h, double tmin) override {
         return false;
@@ -56,6 +68,7 @@ public:
             printf("Number of control points of BezierCurve must be 3n+1!\n");
             exit(0);
         }
+        range[0] = 0, range[1] = 1;
         n = controls.size() - 1, k = n;
         C = new double*[n + 1];
         for (int i = 0; i <= n; ++i) {
@@ -87,7 +100,6 @@ public:
             V += Bezier(i, k, t) * P;
             T += BezierPrime(i, k, t) * P;
         }
-        T.normalize();
         return (CurvePoint){V, T};
     }
 
@@ -96,6 +108,7 @@ public:
         for (int ti = 0; ti <= (n + 1) * resolution; ++ti) {
             double t = 1. * ti / resolution / (n + 1);
             data.push_back(getVT(t));
+            data[data.size() - 1].T.normalize();
         }
     }
 
@@ -122,6 +135,8 @@ public:
         n = controls.size() - 1, k = 3;
         B = new double[n + k + 1];
         dB = new double[n + k + 1];
+        range[0] = tpad(k);
+        range[1] = tpad(n + 1);
     }
     
     ~BsplineCurve() override {
@@ -148,7 +163,6 @@ public:
             V += B[i] * P;
             T += dB[i] * P;
         }
-        T.normalize();
         return (CurvePoint){V, T};
     }
 
@@ -157,6 +171,7 @@ public:
         for (int ti = k * resolution; ti <= (n + 1) * resolution; ++ti) {
             double t = 1. * ti / resolution / (n + k + 1);
             data.push_back(getVT(t));
+            data[data.size() - 1].T.normalize();
         }
     }
 

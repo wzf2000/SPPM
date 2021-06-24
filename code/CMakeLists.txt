@@ -5,7 +5,7 @@ IF(NOT CMAKE_BUILD_TYPE)
     SET(CMAKE_BUILD_TYPE Release)
 ENDIF()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w -O2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w -O2 -g")
 
 IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
@@ -25,7 +25,8 @@ SET(PROJECT_SOURCES
         src/scene_parser.cpp
         src/kdtree.cpp
         src/math.cpp
-        src/objectkdtree.cpp)
+        src/objectkdtree.cpp
+        src/texture.cpp)
 
 SET(PROJECT_INCLUDES
         include/camera.hpp
@@ -50,6 +51,8 @@ SET(PROJECT_INCLUDES
         include/texture.hpp
         include/objectkdtree.hpp
         include/disc.hpp
+        include/bound.hpp
+        include/stb_image.h
         )
 
 SET(CMAKE_CXX_STANDARD 11)

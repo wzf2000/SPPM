@@ -19,13 +19,13 @@ public:
 
     bool intersect(const Ray &r, Hit &h, double tmin) override {
         double x = Vector3f::dot(normal, r.getDirection());
-        if (x == 0) return false;
-        double t = (d + Vector3f::dot(normal, r.getOrigin())) / x;
+        if (x > -1e-6) return false;
+        double t = (d - Vector3f::dot(normal, r.getOrigin())) / x;
         if (t < tmin || t > h.getT()) return false;
         if (Vector3f::dot(normal, r.getDirection()) < 0)
-            h.set(t, this->material, normal);
+            h.set(t, this->material, normal, nullptr, material->texture->query(r.pointAtParameter(t)));
         else
-            h.set(t, this->material, -normal);
+            h.set(t, this->material, -normal, nullptr, material->texture->query(r.pointAtParameter(t)));
         return true;
     }
 

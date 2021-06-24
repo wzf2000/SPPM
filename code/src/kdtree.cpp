@@ -33,11 +33,11 @@ KDTreeNode* KDTree::build(int l, int r, int d) {
         p->maxr2 = std::max(p->maxr2, hitpoints[i]->r2);
     }
     int m = (l + r) >> 1;
-    if (d == 0) 
+    if (d == 0)
         std::nth_element(hitpoints + l, hitpoints + m, hitpoints + r + 1, cmpX);
-    else if (d == 1) 
+    else if (d == 1)
         std::nth_element(hitpoints + l, hitpoints + m, hitpoints + r + 1, cmpY);
-    else 
+    else
         std::nth_element(hitpoints + l, hitpoints + m, hitpoints + r + 1, cmpZ);
     p->hitpoint = hitpoints[m];
     p->ls = (l <= m - 1) ? build(l, m - 1, (d + 1) % 3) : nullptr;
@@ -51,27 +51,27 @@ void KDTree::del(KDTreeNode *p) {
     delete p;
 }
 
-void KDTree::update(KDTreeNode * p, Vector3f photon, Vector3f weight, Vector3f d) {
+void KDTree::update(KDTreeNode *p, Vector3f photon, Vector3f weight, Vector3f d) {
     if (!p) return;
     double mind = 0, maxd = 0;
     if (photon.x() > p->maxCoord.x()) mind += Math::sqr(photon.x()- p->maxCoord.x());
     if (photon.x() < p->minCoord.x()) mind += Math::sqr(p->minCoord.x()- photon.x());
     if (photon.y() > p->maxCoord.y()) mind += Math::sqr(photon.y()- p->maxCoord.y());
-    if (photon.y()< p->minCoord.y()) mind += Math::sqr(p->minCoord.y()- photon.y());
-    if (photon.z()> p->maxCoord.z()) mind += Math::sqr(photon.z()- p->maxCoord.z());
-    if (photon.z()< p->minCoord.z()) mind += Math::sqr(p->minCoord.z()- photon.z());
+    if (photon.y() < p->minCoord.y()) mind += Math::sqr(p->minCoord.y()- photon.y());
+    if (photon.z() > p->maxCoord.z()) mind += Math::sqr(photon.z()- p->maxCoord.z());
+    if (photon.z() < p->minCoord.z()) mind += Math::sqr(p->minCoord.z()- photon.z());
     if (mind > p->maxr2) return;
-    if (p->hitpoint->valid && (photon - p->hitpoint->p).squaredLength() <= p->hitpoint->r2) {
+    if ((photon - p->hitpoint->p).squaredLength() <= p->hitpoint->r2) {
         HitPoint *hp = p->hitpoint;
         double factor = (hp->n * Math::alpha + Math::alpha) / (hp->n * Math::alpha + 1.);
-        Vector3f dr = d - hp->norm * (2 * Vector3f::dot(d, hp->norm));    
+        Vector3f dr = d - hp->norm * (2 * Vector3f::dot(d, hp->norm));
         double rho = hp->brdf.rho_d + hp->brdf.rho_s * pow(Vector3f::dot(dr, hp->dir), hp->brdf.phong_s);
         if (rho < 0) rho = 0;
         else if (rho > 1) rho = 1;
         ++hp->n;
         hp->r2 *= factor;
-        hp->flux = (hp->flux + hp->weight * weight * rho) * factor;  
-    }  
+        hp->flux = (hp->flux + hp->weight * weight * rho) * factor;
+    }
     if (p->ls) update(p->ls, photon, weight, d);
     if (p->rs) update(p->rs, photon, weight, d);
     p->maxr2 = p->hitpoint->r2;

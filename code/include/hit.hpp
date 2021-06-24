@@ -43,13 +43,15 @@ public:
         return normal;
     }
 
-    void set(double _t, Material *m, const Vector3f &n, Vector3f *c = nullptr) {
+    void set(double _t, Material *m, const Vector3f &n, Vector3f *c = nullptr, Vector3f col = Vector3f::ZERO) {
         t = _t;
         material = m;
         normal = n;
         center = c;
+        color = col;
     }
     Vector3f *center = nullptr;
+    Vector3f color;
 
 private:
     double t;

@@ -47,13 +47,13 @@ public:
         tymin = (bounds[sign[1]].y() - o.y()) * invdir.y();
         tymax = (bounds[1 - sign[1]].y() - o.y()) * invdir.y();
         if ((tmin > tymax) || (tmax < tymin)) return false;
-        tmin = std::min(tymin, tmin);
-        tmax = std::max(tymax, tmax);
-        tzmin = (bounds[sign[1]].z() - o.z()) * invdir.z();
-        tzmax = (bounds[1 - sign[1]].z() - o.z()) * invdir.z();
+        tmin = std::max(tymin, tmin);
+        tmax = std::min(tymax, tmax);
+        tzmin = (bounds[sign[2]].z() - o.z()) * invdir.z();
+        tzmax = (bounds[1 - sign[2]].z() - o.z()) * invdir.z();
         if ((tmin > tzmax) || (tmax < tzmin)) return false;
-        tmin = std::min(tzmin, tmin);
-        tmax = std::max(tzmax, tmax);
+        tmin = std::max(tzmin, tmin);
+        tmax = std::min(tzmax, tmax);
         t_min = tmin;
         return true;
     }

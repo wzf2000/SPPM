@@ -100,7 +100,6 @@ public:
             V += Bezier(i, k, t) * P;
             T += BezierPrime(i, k, t) * P;
         }
-        T.normalize();
         return (CurvePoint){V, T};
     }
 
@@ -109,6 +108,7 @@ public:
         for (int ti = 0; ti <= (n + 1) * resolution; ++ti) {
             double t = 1. * ti / resolution / (n + 1);
             data.push_back(getVT(t));
+            data[data.size() - 1].T.normalize();
         }
     }
 
@@ -163,7 +163,6 @@ public:
             V += B[i] * P;
             T += dB[i] * P;
         }
-        T.normalize();
         return (CurvePoint){V, T};
     }
 
@@ -172,6 +171,7 @@ public:
         for (int ti = k * resolution; ti <= (n + 1) * resolution; ++ti) {
             double t = 1. * ti / resolution / (n + k + 1);
             data.push_back(getVT(t));
+            data[data.size() - 1].T.normalize();
         }
     }
 

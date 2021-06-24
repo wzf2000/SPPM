@@ -16,7 +16,7 @@
 #define VOLUMETRIC 0
 #endif
 
-static int count = 0;
+int Renderer::count = 0;
 
 Renderer::Renderer(SceneParser *scene) : scene(scene), aperture(1e-3), focus(1.09), kdtree(nullptr), media(new Sphere(Vector3f(2, 2, 3), 10, new Material)) {
     numPhotons = 1000000;
@@ -46,7 +46,7 @@ void Renderer::render(int numRounds, std::string output) {
         count = 0;
         fprintf(stderr, "Round %d/%d:\n", i + 1, numRounds);
         renderPerTile((Tile){(intCoord){0, 0}, (intCoord){image->Height(), image->Width()}});
-        if ((i + 1) % 50 == 0) {
+        if ((i + 1) % 1 == 0) {
             evaluateRadiance(i + 1);
             char filename[100];
             sprintf(filename, "checkpoints/checkpoint-%d.bmp", i + 1);
@@ -178,7 +178,7 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
     if (BRDFs[hit.getMaterial()->brdf].diffuse > 0 && action <= BRDFs[hit.getMaterial()->brdf].diffuse) {
         if (!incoming) ss = ss * absorption;
         if (hp) {
-            ++count;
+            // ++count;
             hp->p = p;
             hp->weight = weight * hit.getMaterial()->texture->query(p) * ss;
             hp->fluxLight = hp->fluxLight + hp->weight * hit.getMaterial()->emission;
@@ -215,7 +215,7 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
         double cosThetaIn = -Vector3f::dot(ray.getDirection(), hit.getNormal());
         double cosThetaOut2 = 1 - (1 - Math::sqr(cosThetaIn)) / Math::sqr(refractiveIndex);
         
-        if (cosThetaOut2 >= -Math::eps) {
+        if (cosThetaOut2 > 0) {
             double cosThetaOut = sqrt(cosThetaOut2);
 
             double R0 = Math::sqr((1 - refractiveIndex) / (1 + refractiveIndex));

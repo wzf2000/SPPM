@@ -35,4 +35,5 @@ public:
     void trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint *hp = nullptr);
     void initHitKDTree();
     void evaluateRadiance(int numRounds);
+    static int count;
 };

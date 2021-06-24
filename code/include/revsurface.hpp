@@ -4,6 +4,7 @@
 #include "object3d.hpp"
 #include "curve.hpp"
 #include "bound.hpp"
+#include "renderer.hpp"
 #include <tuple>
 
 class RevSurface : public Object3D {
@@ -83,6 +84,7 @@ public:
         getUV(r, t, theta, mu);
         Vector3f normal, point;
         if (!newton(r, t, theta, mu, normal, point)) return false;
+        ++Renderer::count;
         if (!isnormal(mu) || !isnormal(theta) || !isnormal(t)) return false;
         if (t < tmin || t > h.getT() || mu < pCurve->range[0] || mu > pCurve->range[1]) return false;
         h.set(t, material, normal.normalized(), bound.getCenter());

@@ -6,18 +6,6 @@ PerspectiveCamera {
     angle2 50
     width 1000
     height 1000
-    focalLength 220
-    aperture 6
-}
-
-Lights {
-    numLights 1
-    PointLight {
-        sourceP 0 0 5
-        sourceR 0.2
-        sourceN 0 -1 0
-        color 0.9 0.9 0.9
-    }
 }
 
 Background {
@@ -29,31 +17,33 @@ Materials {
     Material {
 	    color 1 0.8 1
 	    BRDF 11
-        texture texture/vase.png
+        texture texture/vase.png 0 0 0 0 0 0 0 0
 	}
     Material {
         color 0.9 0.9 0.9
-        BRDF 0
+        emission 1000 1000 1000
+        BRDF 6
     }
     Material {
         color 0.9 0.9 0.9
-        BRDF 0
+        BRDF 6
     }
     Material {
         color 0.9 0.9 0.9
-        BRDF 0
+        BRDF 6
     }
     Material {
         color 1 1 1
+        emission 1000 1000 1000
         BRDF 1
     }
     Material {
         color 0.75 0.25 0.25
-        BRDF 0
+        BRDF 6
     }
     Material {
         color 0.25 0.25 0.75
-        BRDF 0
+        BRDF 6
     }
     Material {
         color 0.9 0.9 0.9

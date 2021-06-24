@@ -12,6 +12,5 @@ public:
     int n;
     BRDF brdf;
     double r2;
-    bool valid;
-    HitPoint() : flux(0), fluxLight(0), r2(1e-5), n(0), valid(false) {}
+    HitPoint() : flux(0), fluxLight(0), r2(1e-5), n(0) {}
 };

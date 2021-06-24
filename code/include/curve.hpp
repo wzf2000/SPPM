@@ -24,11 +24,9 @@ protected:
     std::vector<Vector3f> controls;
 public:
     double ymin, ymax, radius;
-    Vector3f center;
     double range[2];
 
     explicit Curve(std::vector<Vector3f> points) : controls(std::move(points)) {
-        center = Vector3f::ZERO;
         ymin = 1e100, ymax = -1e100;
         radius = 0;
         for (auto &point : controls) {
@@ -36,10 +34,7 @@ public:
             ymax = std::max(point.y(), ymax);
             radius = max(radius, fabs(point.x()));
             radius = max(radius, fabs(point.z()));
-            center += point;
         }
-        center = center / (double)controls.size();
-        center[0] = 0;
     }
 
     bool intersect(const Ray &r, Hit &h, double tmin) override {

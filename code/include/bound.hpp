@@ -24,8 +24,7 @@ public:
     void set(const Vector3f &mn, const Vector3f &mx) {
         bounds[0] = mn;
         bounds[1] = mx;
-        delete center;
-        center = new Vector3f((bounds[0] + bounds[1]) / 2);
+        *center = Vector3f((bounds[0] + bounds[1]) / 2);
     }
 
     Vector3f *getCenter() const {
@@ -35,8 +34,7 @@ public:
     void updateBound(const Vector3f &v) {
         bounds[0] = min(bounds[0], v);
         bounds[1] = max(bounds[1], v);
-        delete center;
-        center = new Vector3f((bounds[0] + bounds[1]) / 2);
+        *center = Vector3f((bounds[0] + bounds[1]) / 2);
     }
 
     bool intersect(const Ray &r, double &t_min) {

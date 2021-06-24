@@ -47,7 +47,7 @@ class PerspectiveCamera : public Camera {
 
 public:
     PerspectiveCamera(const Vector3f &center, const Vector3f &direction,
-            const Vector3f &up, int imgW, int imgH, double angle1, double angle2, double f = 20, double aperture = 1) : Camera(center, direction, up, imgW, imgH), focalLength(f), aperture(aperture) {
+            const Vector3f &up, int imgW, int imgH, double angle1, double angle2, double f = 1, double aperture = 0) : Camera(center, direction, up, imgW, imgH), focalLength(f), aperture(aperture) {
         // angle is in radian.
         fy = (double) height / (2 * tan(angle1 / 2));
         fx = (double) width / (2 * tan(angle2 / 2));
@@ -62,7 +62,6 @@ public:
         Vector3f dir(csx - dx, -csy - dy, focalLength);
         Matrix3f R(this->horizontal, -this->up, this->direction);
         dir = R * dir;
-        dir.normalize();
         Ray ray(this->center + horizontal * dx - up * dy, dir);
         return ray;
     }

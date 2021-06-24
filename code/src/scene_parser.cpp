@@ -144,7 +144,7 @@ void SceneParser::parsePerspectiveCamera() {
         focalLength = readDouble();
         getToken(token);
     }
-    double aperture = 1;
+    double aperture = 0;
     if (!strcmp(token, "aperture")) {
         aperture = readDouble();
         getToken(token);
@@ -403,7 +403,7 @@ Group *SceneParser::parseGroup() {
         } else {
             Object3D *object = parseObject(token);
             assert (object != nullptr);
-            if (object->getMaterial()->emisiion != Vector3f::ZERO)
+            if (object->getMaterial()->emission != Vector3f::ZERO)
                 illuminants.emplace_back(object);
             answer->addObject(count, object);
 
@@ -694,9 +694,14 @@ int SceneParser::readInt() {
 }
 
 std::pair<Ray, Vector3f> SceneParser::generateRay() {
-    int index = Math::random() * (num_lights + illuminants.size());
+    static int cnt = 0;
+    // int index = Math::random() * (num_lights + illuminants.size());
+    int index = cnt++;
+    cnt %= (num_lights + illuminants.size());
     if (index < num_lights)
         return std::make_pair(lights[index]->generateRandomRay(), 2.5 * lights[index]->getColor());
-    else
-        return std::make_pair(illuminants[index - num_lights]->generateRandomRay(), illuminants[index - num_lights]->getMaterial()->emisiion);
+    else {
+        Ray ray = illuminants[index - num_lights]->generateRandomRay();
+        return std::make_pair(ray, illuminants[index - num_lights]->getMaterial()->emission);
+    }
 }

@@ -55,6 +55,7 @@ public:
     }
 
     Ray generateRandomRay() const override {
+        // Sphere Point Picking
         double x = Math::random(-1, 1), y = Math::random(-1, 1);
         double r2 = Math::sqr(x) + Math::sqr(y);
         while (r2 >= 1) {
@@ -62,7 +63,6 @@ public:
             r2 = Math::sqr(x) + Math::sqr(y);
         }
         Vector3f dir(2 * x * sqrt(1 - r2), 2 * y * sqrt(1 - r2), 1 - 2 * r2);
-        dir.normalize();
         return Ray(center + radius * dir, dir);
     }
 

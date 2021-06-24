@@ -31,6 +31,14 @@ public:
         else return false;
     }
 
+    Ray generateRandomRay() const override {
+        double alpha = Math::random(0, 2 * M_PI);
+        Vector3f s = center +  Vector3f(cos(alpha), 0, sin(alpha)) * 0.2;
+        Vector3f d = Math::sampleReflectedRay(Vector3f(0, -1, 0));
+        d.normalize();
+        return Ray(s + d * Math::eps, d);
+    }
+
 protected:
     Vector3f center;
     double radius;

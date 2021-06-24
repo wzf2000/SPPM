@@ -6,8 +6,6 @@ PerspectiveCamera {
     angle2 50
     width 1000
     height 1000
-    focalLength 220
-    aperture 6
 }
 
 Background {
@@ -22,30 +20,29 @@ Materials {
 	}
     Material {
         color 0.9 0.9 0.9
-        emission 4 4 4
-        BRDF 0
+        emission 1000 1000 1000
+        BRDF 6
     }
     Material {
         color 0.9 0.9 0.9
-        BRDF 0
+        BRDF 6
     }
     Material {
         color 0.9 0.9 0.9
-        emission 1 1 1
-        BRDF 0
+        BRDF 6
     }
     Material {
         color 1 1 1
-        emission 4 4 4
+        emission 1000 1000 1000
         BRDF 1
     }
     Material {
         color 0.75 0.25 0.25
-        BRDF 0
+        BRDF 6
     }
     Material {
         color 0.25 0.25 0.75
-        BRDF 0
+        BRDF 6
     }
     Material {
         color 0.9 0.9 0.9

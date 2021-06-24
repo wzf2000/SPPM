@@ -6,12 +6,6 @@ if [[ ! -d build ]]; then
     cd build
     cmake ..
     cd ..
-else
-    rm -r build
-    mkdir -p build
-    cd build
-    cmake ..
-    cd ..
 fi
 
 if [[ ! -d checkpoints ]]; then

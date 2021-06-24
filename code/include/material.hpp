@@ -18,7 +18,7 @@ private:
 
 public:
 
-    explicit Material(int brdf = DIFFUSE, Texture *t = nullptr, const Vector3f &e_color = Vector3f::ZERO) : brdf(brdf), texture(t), emisiion(e_color) {}
+    explicit Material(int brdf = DIFFUSE, Texture *t = nullptr, const Vector3f &e_color = Vector3f::ZERO) : brdf(brdf), texture(t), emission(e_color) {}
 
     virtual ~Material() = default;
 
@@ -26,7 +26,7 @@ public:
 
     int brdf;
 
-    Vector3f emisiion;
+    Vector3f emission;
 
 protected:
 };

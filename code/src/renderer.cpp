@@ -46,16 +46,17 @@ void Renderer::render(int numRounds, std::string output) {
 }
 
 void Renderer::renderPerTile(Tile tile) {
-    Triangle triangle(Vector3f(0, 0, camera->center.z() + focus), Vector3f(0, 1, camera->center.z() + focus), Vector3f(1, 0, camera->center.z() + focus), nullptr);
+    // Triangle triangle(Vector3f(0, 0, camera->center.z() + focus), Vector3f(0, 1, camera->center.z() + focus), Vector3f(1, 0, camera->center.z() + focus), nullptr);
     for (int y = tile.begin.y; y < tile.end.y; ++y) {
         fprintf(stderr, "\rRay tracing pass %.3lf%%", y * 100. / image->Width());
-        #pragma omp parallel for schedule(dynamic, 60), num_threads(12)
+        #pragma omp parallel for schedule(dynamic, 1), num_threads(12)
         for (int x = tile.begin.x; x < tile.end.x; ++x) {
-            Ray camRay = camera->generateRay(Vector2f(y, x));
-            double t = triangle.intersectPlane(camRay);
-            Vector3f focusP = camRay.getOrigin() + camRay.getDirection() * t;
-            double theta = Math::random(0, 2 * M_PI);
-            Ray ray(camRay.getOrigin() + Vector3f(cos(theta), sin(theta), 0) * aperture, (focusP - (camRay.getOrigin() + Vector3f(cos(theta), sin(theta), 0) * aperture)));
+            // Ray camRay = camera->generateRay(Vector2f(y, x));
+            // double t = triangle.intersectPlane(camRay);
+            // Vector3f focusP = camRay.getOrigin() + camRay.getDirection() * t;
+            // double theta = Math::random(0, 2 * M_PI);
+            // Ray ray(camRay.getOrigin() + Vector3f(cos(theta), sin(theta), 0) * aperture, (focusP - (camRay.getOrigin() + Vector3f(cos(theta), sin(theta), 0) * aperture)));
+            Ray ray = camera->generateRandomRay(Vector2f(y, x));
             hitPoints[y * image->Height() + x]->valid = false;
             hitPoints[y * image->Height() + x]->dir = -1 * ray.getDirection();
             trace(ray, Vector3f(1), 1, hitPoints[y * image->Height() + x]);
@@ -64,7 +65,7 @@ void Renderer::renderPerTile(Tile tile) {
     fprintf(stderr, "\rRay tracing pass 100.000%%\n");
     initHitKDTree();
     Vector3f weight_init = 2.5;
-    #pragma omp parallel for schedule(dynamic, 128), num_threads(12)
+    #pragma omp parallel for schedule(dynamic, 1), num_threads(12)
     for (int i = 0; i < numPhotons; ++i) {
         std::pair<Ray, Vector3f> camRay = scene->generateRay();
         Ray ray = camRay.first;
@@ -136,6 +137,11 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
         else {
             if (!group->intersect(ray, hh, Math::eps)) {
                 // TODO: backgroud color
+                if (hp) {
+                    hp->weight = weight * scene->getBackgroundColor();
+                    hp->valid = true;
+                }
+                delete scatter_ray;
                 return;
             }
         }
@@ -143,11 +149,17 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
             double dis = std::min(hh.getT(), t_far) - t_near;
             absorption = exp(-sigma_t * dis);
         }
+        delete scatter_ray;
     }
     Hit hit;
     bool flag = group->intersect(ray, hit, Math::eps);
     if (!hit.getMaterial() || !hp && hit.getT() < 1e-3) {
         // TODO: backgroud color
+        if (hp) {
+            hp->weight = weight * scene->getBackgroundColor();
+            hp->fluxLight = hp->fluxLight;
+            hp->valid = true;
+        }
         return;
     }
     Vector3f p = ray.pointAtParameter(hit.getT());
@@ -180,7 +192,7 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
             }
             else
                 hp->valid = true;
-        }   
+        }
         else {
             double a = Math::random();
             // phong specular
@@ -197,7 +209,7 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
                     trace(Ray(p + d * Math::eps, d), weight * hit.getMaterial()->texture->query(p) * ss, depth + 1, hp);
                 }
             }
-        }    
+        }
         return;
     }
     action -= BRDFs[hit.getMaterial()->brdf].diffuse;

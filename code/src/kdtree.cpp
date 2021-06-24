@@ -51,7 +51,7 @@ void KDTree::del(KDTreeNode *p) {
     delete p;
 }
 
-void KDTree::update(KDTreeNode * p, Vector3f photon, Vector3f weight, Vector3f d) {
+void KDTree::update(KDTreeNode *p, Vector3f photon, Vector3f weight, Vector3f d) {
     if (!p) return;
     double mind = 0, maxd = 0;
     if (photon.x() > p->maxCoord.x()) mind += Math::sqr(photon.x()- p->maxCoord.x());

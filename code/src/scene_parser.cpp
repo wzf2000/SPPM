@@ -139,8 +139,18 @@ void SceneParser::parsePerspectiveCamera() {
     assert (!strcmp(token, "height"));
     int height = readInt();
     getToken(token);
+    double focalLength = 1;
+    if (!strcmp(token, "focalLength")) {
+        focalLength = readDouble();
+        getToken(token);
+    }
+    double aperture = 1;
+    if (!strcmp(token, "aperture")) {
+        aperture = readDouble();
+        getToken(token);
+    }
     assert (!strcmp(token, "}"));
-    camera = new PerspectiveCamera(center, direction, up, width, height, angle_radians1, angle_radians2);
+    camera = new PerspectiveCamera(center, direction, up, width, height, angle_radians1, angle_radians2, focalLength, aperture);
 }
 
 void SceneParser::parseFixedCamera() {

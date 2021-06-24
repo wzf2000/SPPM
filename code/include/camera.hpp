@@ -3,6 +3,7 @@
 
 #include "ray.hpp"
 #include "math.hpp"
+#include "triangle.hpp"
 #include <vecmath.h>
 #include <float.h>
 #include <cmath>
@@ -22,6 +23,7 @@ public:
 
     // Generate rays for each screen-space coordinate
     virtual Ray generateRay(const Vector2f &point) = 0;
+    virtual Ray generateRandomRay(const Vector2f &point) = 0;
     virtual ~Camera() = default;
 
     int getWidth() const { return width; }
@@ -45,7 +47,7 @@ class PerspectiveCamera : public Camera {
 
 public:
     PerspectiveCamera(const Vector3f &center, const Vector3f &direction,
-            const Vector3f &up, int imgW, int imgH, double angle1, double angle2) : Camera(center, direction, up, imgW, imgH) {
+            const Vector3f &up, int imgW, int imgH, double angle1, double angle2, double f = 20, double aperture = 1) : Camera(center, direction, up, imgW, imgH), focalLength(f), aperture(aperture) {
         // angle is in radian.
         fy = (double) height / (2 * tan(angle1 / 2));
         fx = (double) width / (2 * tan(angle2 / 2));
@@ -54,14 +56,19 @@ public:
     }
 
     Ray generateRay(const Vector2f &point) override {
-        double csx = (point.x() - cx) / fx;
-        double csy = (point.y() - cy) / fy;
-        Vector3f dir(csx, -csy, 1.0f);
+        double csx = (point.x() - cx) / fx * focalLength;
+        double csy = (point.y() - cy) / fy * focalLength;
+        double dx = Math::random(-1, 1) * aperture, dy = Math::random(-1, 1) * aperture;
+        Vector3f dir(csx - dx, -csy - dy, focalLength);
         Matrix3f R(this->horizontal, -this->up, this->direction);
         dir = R * dir;
-        dir = dir / dir.length();
-        Ray ray(this->center, dir);
+        dir.normalize();
+        Ray ray(this->center + horizontal * dx - up * dy, dir);
         return ray;
+    }
+
+    Ray generateRandomRay(const Vector2f &point) override {
+        return generateRay(Vector2f(point.x() + Math::random(-1, 1), point.y() + Math::random(-1, 1)));
     }
 
     friend class Renderer;
@@ -69,6 +76,7 @@ public:
 private:
     double fx, fy;
     double cx, cy;
+    double aperture, focalLength;
 
 };
 
@@ -83,6 +91,19 @@ public:
         Vector3f p(csx, csy, 0);
         Vector3f dir = p - center;
         return Ray(center, dir);
+    }
+
+    void getFocusPlane(Triangle &t) {
+        t = Triangle(Vector3f(0, 0, center.z() + focus), Vector3f(0, 1, center.z() + focus), Vector3f(1, 0, center.z() + focus), nullptr);
+    }
+
+    Ray generateRandomRay(const Vector2f &point) override {
+        Triangle triangle(Vector3f(0, 0, center.z() + focus), Vector3f(0, 1, center.z() + focus), Vector3f(1, 0, center.z() + focus), nullptr);
+        Ray camRay = generateRay(Vector2f(point.x(), point.y()));
+        double t = triangle.intersectPlane(camRay);
+        Vector3f focusP = camRay.getOrigin() + camRay.getDirection() * t;
+        double theta = Math::random(0, 2 * M_PI);
+        return Ray(camRay.getOrigin() + Vector3f(cos(theta), sin(theta), 0) * aperture, (focusP - (camRay.getOrigin() + Vector3f(cos(theta), sin(theta), 0) * aperture)));
     }
 
     friend class Renderer;

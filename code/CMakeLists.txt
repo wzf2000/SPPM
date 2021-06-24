@@ -50,6 +50,7 @@ SET(PROJECT_INCLUDES
         include/texture.hpp
         include/objectkdtree.hpp
         include/disc.hpp
+        include/bound.hpp
         )
 
 SET(CMAKE_CXX_STANDARD 11)

@@ -23,7 +23,24 @@ class Curve : public Object3D {
 protected:
     std::vector<Vector3f> controls;
 public:
-    explicit Curve(std::vector<Vector3f> points) : controls(std::move(points)) {}
+    double ymin, ymax, radius;
+    Vector3f center;
+    double range[2];
+
+    explicit Curve(std::vector<Vector3f> points) : controls(std::move(points)) {
+        center = Vector3f::ZERO;
+        ymin = 1e100, ymax = -1e100;
+        radius = 0;
+        for (auto &point : controls) {
+            ymin = std::min(point.y(), ymin);
+            ymax = std::max(point.y(), ymax);
+            radius = max(radius, fabs(point.x()));
+            radius = max(radius, fabs(point.z()));
+            center += point;
+        }
+        center = center / (double)controls.size();
+        center[0] = 0;
+    }
 
     bool intersect(const Ray &r, Hit &h, double tmin) override {
         return false;
@@ -56,6 +73,7 @@ public:
             printf("Number of control points of BezierCurve must be 3n+1!\n");
             exit(0);
         }
+        range[0] = 0, range[1] = 1;
         n = controls.size() - 1, k = n;
         C = new double*[n + 1];
         for (int i = 0; i <= n; ++i) {
@@ -122,6 +140,8 @@ public:
         n = controls.size() - 1, k = 3;
         B = new double[n + k + 1];
         dB = new double[n + k + 1];
+        range[0] = (double)k / (n + k + 1);
+        range[1] = (double)(n + 1) / (n + k + 1);
     }
     
     ~BsplineCurve() override {

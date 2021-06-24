@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+ROUNDS=2500
+PHOTONS=200000
+CKPT_INTERVAL=1
 
 # If project not ready, generate cmake file.
 if [[ ! -d build ]]; then
@@ -20,4 +23,4 @@ cd ..
 # Run all testcases. 
 # You can comment some lines to disable the run of specific examples.
 mkdir -p output
-bin/Project testcases/$1 output/scene.bmp 2500
+bin/Project testcases/$1 output/scene.bmp $ROUNDS $PHOTONS $CKPT_INTERVAL

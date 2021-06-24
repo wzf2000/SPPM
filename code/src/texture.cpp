@@ -59,6 +59,7 @@ Vector3f Texture::query(const Vector3f &p) {
 }
 
 Vector3f Texture::getColor(double u, double v) {
+    if (!image) return color;
     u -= int(u);
     v -= int(v);
     if (u < 0) u += 1;

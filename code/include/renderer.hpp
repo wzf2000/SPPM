@@ -30,7 +30,7 @@ class Renderer {
     double focus;
 public:
     Renderer(SceneParser *);
-    void render(int, std::string);
+    void render(int, int, int, std::string);
     void renderPerTile(Tile);
     void trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint *hp = nullptr);
     void initHitKDTree();

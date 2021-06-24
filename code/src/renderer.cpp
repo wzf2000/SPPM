@@ -19,7 +19,6 @@
 int Renderer::count = 0;
 
 Renderer::Renderer(SceneParser *scene) : scene(scene), aperture(1e-3), focus(1.09), kdtree(nullptr), media(new Sphere(Vector3f(2, 2, 3), 10, new Material)) {
-    numPhotons = 1000000;
     camera = scene->getCamera();
     image = new Image(camera->getWidth(), camera->getHeight());
     for (int i = 0; i < image->Width(); ++i)
@@ -41,12 +40,13 @@ void Renderer::evaluateRadiance(int numRounds) {
     }
 }
 
-void Renderer::render(int numRounds, std::string output) {
+void Renderer::render(int numRounds, int numPhotons, int ckpt_interval, std::string output) {
+    this->numPhotons = numPhotons;
     for (int i = 0; i < numRounds; ++i) {
         count = 0;
         fprintf(stderr, "Round %d/%d:\n", i + 1, numRounds);
         renderPerTile((Tile){(intCoord){0, 0}, (intCoord){image->Height(), image->Width()}});
-        if ((i + 1) % 50 == 0) {
+        if ((i + 1) % ckpt_interval == 0) {
             evaluateRadiance(i + 1);
             char filename[100];
             sprintf(filename, "checkpoints/checkpoint-%d.bmp", i + 1);

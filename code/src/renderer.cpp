@@ -18,7 +18,7 @@
 
 int Renderer::count = 0;
 
-Renderer::Renderer(SceneParser *scene) : scene(scene), aperture(1e-3), focus(1.09), kdtree(nullptr), media(new Sphere(Vector3f(2, 2, 3), 10, new Material)) {
+Renderer::Renderer(SceneParser *scene) : scene(scene), kdtree(nullptr), media(new Sphere(Vector3f(2, 2, 3), 10, new Material)) {
     camera = scene->getCamera();
     image = new Image(camera->getWidth(), camera->getHeight());
     for (int i = 0; i < image->Width(); ++i)

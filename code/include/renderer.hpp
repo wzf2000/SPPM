@@ -26,8 +26,6 @@ class Renderer {
     KDTree *kdtree;
     Sphere *media;
     int numPhotons;
-    double aperture;
-    double focus;
 public:
     Renderer(SceneParser *);
     void render(int, int, int, std::string);

@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <vecmath.h>
+#include <vector>
 #include "ray.hpp"
 
 class Camera;
@@ -100,6 +101,7 @@ private:
     Material **materials;
     Material *current_material;
     Group *group;
+    std::vector<Object3D*> illuminants;
 };
 
 #endif // SCENE_PARSER_H

@@ -150,9 +150,14 @@ void Mesh::computeNormal() {
 
 Vector3f *Mesh::calcCenter() {
     if (center) return center;
-    center = new Vector3f(0);
+    center = new Vector3f(Vector3f::ZERO);
     for (auto &vertex : v)
         *center = *center + vertex;
     *center = *center / v.size();
     return center;
+}
+
+Ray Mesh::generateRandomRay() const {
+    int index = Math::random() * faces.size();
+    return faces[index]->generateRandomRay();
 }

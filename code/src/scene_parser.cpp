@@ -56,7 +56,7 @@ SceneParser::SceneParser(const char *filename) {
     fclose(file);
     file = nullptr;
 
-    if (num_lights == 0) {
+    if (num_lights + illuminants.size() == 0) {
         printf("WARNING:    No lights specified\n");
     }
 }
@@ -303,7 +303,7 @@ Material *SceneParser::parseMaterial() {
     filename[0] = 0;
     int brdf = DIFFUSE;
     Texture *t = nullptr;
-    Vector3f color = Vector3f::ZERO;
+    Vector3f color = Vector3f::ZERO, emission = Vector3f::ZERO;
     getToken(token);
     assert (!strcmp(token, "{"));
     while (true) {
@@ -323,13 +323,15 @@ Material *SceneParser::parseMaterial() {
             t = new Texture(filename, x, xb, y, yb);
         } else if (strcmp(token, "BRDF") == 0) {
             brdf = readInt();
+        } else if (strcmp(token, "emission") == 0) {
+            emission = readVector3f();
         } else {
             assert (!strcmp(token, "}"));
             break;
         }
     }
     if (!t) t = new Texture(color);
-    auto *answer = new Material(brdf, t);
+    auto *answer = new Material(brdf, t, emission);
     return answer;
 }
 
@@ -387,6 +389,7 @@ Group *SceneParser::parseGroup() {
     int num_objects = readInt();
 
     auto *answer = new Group(num_objects);
+    illuminants.clear();
 
     // read in the objects
     int count = 0;
@@ -400,6 +403,8 @@ Group *SceneParser::parseGroup() {
         } else {
             Object3D *object = parseObject(token);
             assert (object != nullptr);
+            if (object->getMaterial()->emisiion != Vector3f::ZERO)
+                illuminants.emplace_back(object);
             answer->addObject(count, object);
 
             count++;
@@ -638,7 +643,7 @@ Transform *SceneParser::parseTransform() {
     assert(object != nullptr);
     getToken(token);
     assert (!strcmp(token, "}"));
-    return new Transform(matrix, object);
+    return new Transform(matrix, object, current_material);
 }
 
 // ====================================================================
@@ -689,6 +694,9 @@ int SceneParser::readInt() {
 }
 
 std::pair<Ray, Vector3f> SceneParser::generateRay() {
-    int index = Math::random() * num_lights;
-    return std::make_pair(lights[index]->generateRay(), lights[index]->getColor());
+    int index = Math::random() * (num_lights + illuminants.size());
+    if (index < num_lights)
+        return std::make_pair(lights[index]->generateRandomRay(), 2.5 * lights[index]->getColor());
+    else
+        return std::make_pair(illuminants[index - num_lights]->generateRandomRay(), illuminants[index - num_lights]->getMaterial()->emisiion);
 }

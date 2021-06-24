@@ -85,7 +85,7 @@ public:
         if (!newton(r, t, theta, mu, normal, point)) return false;
         if (!isnormal(mu) || !isnormal(theta) || !isnormal(t)) return false;
         if (t < 0 || t > h.getT() || mu < pCurve->range[0] || mu > pCurve->range[1]) return false;
-        h.set(t, material, normal.normalized(), &pCurve->center);
+        h.set(t, material, normal.normalized(), bound.getCenter());
         return true;
     }
 

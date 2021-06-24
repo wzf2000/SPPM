@@ -10,16 +10,6 @@ PerspectiveCamera {
     aperture 6
 }
 
-Lights {
-    numLights 1
-    PointLight {
-        sourceP 0 0 5
-        sourceR 0.2
-        sourceN 0 1 0
-        color 0.9 0.9 0.9
-    }
-}
-
 Background {
     color 0.3 0.2 0.3
 }
@@ -32,6 +22,7 @@ Materials {
 	}
     Material {
         color 0.9 0.9 0.9
+        emission 4 4 4
         BRDF 0
     }
     Material {
@@ -40,10 +31,12 @@ Materials {
     }
     Material {
         color 0.9 0.9 0.9
+        emission 1 1 1
         BRDF 0
     }
     Material {
         color 1 1 1
+        emission 4 4 4
         BRDF 1
     }
     Material {

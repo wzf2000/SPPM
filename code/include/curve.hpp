@@ -140,8 +140,8 @@ public:
         n = controls.size() - 1, k = 3;
         B = new double[n + k + 1];
         dB = new double[n + k + 1];
-        range[0] = (double)k / (n + k + 1);
-        range[1] = (double)(n + 1) / (n + k + 1);
+        range[0] = tpad(k);
+        range[1] = tpad(n + 1);
     }
     
     ~BsplineCurve() override {

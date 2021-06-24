@@ -23,7 +23,7 @@ void Renderer::evaluateRadiance(int numRounds) {
     for (int y = 0; y < image->Width(); ++y)
         for (int x = 0; x < image->Height(); ++x) {
             HitPoint *hp = hitPoints[y * image->Height() + x];
-            Vector3f color =  hp->flux / (M_PI * hp->r2 * numPhotons * numRounds) + Vector3f(1) * hp->fluxLight / numRounds;
+            Vector3f color =  hp->flux / (M_PI * hp->r2 * numPhotons * numRounds) + hp->fluxLight / numRounds;
             color.x() = std::pow(color.x(), Math::gamma);
             color.y() = std::pow(color.y(), Math::gamma);
             color.z() = std::pow(color.z(), Math::gamma);
@@ -64,13 +64,10 @@ void Renderer::renderPerTile(Tile tile) {
     }
     fprintf(stderr, "\rRay tracing pass 100.000%%\n");
     initHitKDTree();
-    Vector3f weight_init = 2.5;
     #pragma omp parallel for schedule(dynamic, 1), num_threads(12)
     for (int i = 0; i < numPhotons; ++i) {
         std::pair<Ray, Vector3f> camRay = scene->generateRay();
-        Ray ray = camRay.first;
-        Vector3f light = camRay.second;
-        trace(ray, weight_init * light, 1);
+        trace(camRay.first, camRay.second, 1);
     }
     fprintf(stderr, "\rPhoton tracing pass done\n");
 }
@@ -136,7 +133,7 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
         }
         else {
             if (!group->intersect(ray, hh, Math::eps)) {
-                // TODO: backgroud color
+                // TODO: TEST
                 if (hp) {
                     hp->weight = weight * scene->getBackgroundColor();
                     hp->valid = true;
@@ -154,7 +151,7 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
     Hit hit;
     bool flag = group->intersect(ray, hit, Math::eps);
     if (!hit.getMaterial() || !hp && hit.getT() < 1e-3) {
-        // TODO: backgroud color
+        // TODO: TEST
         if (hp) {
             hp->weight = weight * scene->getBackgroundColor();
             hp->fluxLight = hp->fluxLight;
@@ -183,13 +180,11 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
         if (hp) {
             hp->p = p;
             hp->weight = weight * hit.getMaterial()->texture->query(p) * ss;
-            hp->fluxLight = hp->fluxLight + hp->weight * (hit.getMaterial()->brdf == LIGHT);
+            hp->fluxLight = hp->fluxLight + hp->weight * hit.getMaterial()->emisiion;
             hp->brdf = BRDFs[hit.getMaterial()->brdf];
             hp->norm = hit.getNormal();
-            if (hit.getMaterial()->brdf == LIGHT) {
-                hp->fluxLight = hp->fluxLight + hp->weight;
+            if (hit.getMaterial()->emisiion != Vector3f::ZERO)
                 hp->valid = false;
-            }
             else
                 hp->valid = true;
         }

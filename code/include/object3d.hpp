@@ -15,6 +15,14 @@ public:
     explicit Object3D(Material *material) {
         this->material = material;
     }
+
+    Material *getMaterial() {
+        return material;
+    }
+
+    virtual Ray generateRandomRay() const {
+        return Ray(Vector3f::ZERO, Vector3f::ZERO);
+    }
     
     // Intersect Ray with this object. If hit, store information in hit structure.
     virtual bool intersect(const Ray &r, Hit &h, double tmin) = 0;

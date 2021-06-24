@@ -33,6 +33,8 @@ public:
     Vector3f *calcCenter();
     bool intersect(const Ray &r, Hit &h, double tmin) override;
 
+    Ray generateRandomRay() const override;
+
 private:
 
     // Normal can be used for light estimation

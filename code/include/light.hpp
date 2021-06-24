@@ -14,7 +14,7 @@ public:
 
     virtual void getIllumination(const Vector3f &p, Vector3f &dir, Vector3f &col) const = 0;
 
-    virtual Ray generateRay() const = 0;
+    virtual Ray generateRandomRay() const = 0;
     
     virtual Vector3f getColor() const = 0;
 };
@@ -40,9 +40,9 @@ public:
         col = color;
     }
 
-    Ray generateRay() const override {
-        double alpha = Math::random(0, 2 * M_PI);
-        Vector3f s = Vector3f(cos(alpha), 0, sin(alpha));
+    Ray generateRandomRay() const override {
+        double x = Math::random(-10, 10), y = Math::random(-10, 10), z = Math::random(-10, 10);
+        Vector3f s = Vector3f(x, y, z);
         return Ray(s, direction);
     }
 
@@ -73,7 +73,7 @@ public:
         col = color;
     }
 
-    Ray generateRay() const override {
+    Ray generateRandomRay() const override {
         double alpha = Math::random(0, 2 * M_PI);
         Vector3f s = sourceP +  Vector3f(cos(alpha), 0, sin(alpha)) * sourceR;
         Vector3f d = Math::sampleReflectedRay(sourceN);

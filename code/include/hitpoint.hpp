@@ -4,6 +4,8 @@
 #include "hit.hpp"
 #include "brdf.hpp"
 
+#define INIT_R2 1e-5
+
 class HitPoint {
 public:
     Vector3f p;
@@ -12,5 +14,5 @@ public:
     int n;
     BRDF brdf;
     double r2;
-    HitPoint() : flux(0), fluxLight(0), r2(1e-5), n(0) {}
+    HitPoint() : flux(0), fluxLight(0), r2(INIT_R2), n(0) {}
 };

@@ -88,8 +88,8 @@ Mesh::Mesh(const char *filename, Material *material, Vector3f *center) : Object3
                     ss >> str;
                     std::vector<std::string> id = mySplit(str, string(1, bslash));
                     trig[i] = stoi(id[0]) - 1;
-                    if (id.size() > 1) vtID[i] = stoi(id[1]) - 1;
-                    if (id.size() > 2) vnID[i] = stoi(id[2]) - 1;
+                    if (id.size() > 1 && id[1] != "") vtID[i] = stoi(id[1]) - 1;
+                    if (id.size() > 2 && id[2] != "") vnID[i] = stoi(id[2]) - 1;
                 }
                 t.emplace_back(trig);
                 vtIndex.emplace_back(vtID);

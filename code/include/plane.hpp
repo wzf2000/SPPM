@@ -22,11 +22,24 @@ public:
         if (x > -1e-6) return false;
         double t = (d - Vector3f::dot(normal, r.getOrigin())) / x;
         if (t < tmin || t > h.getT()) return false;
+        Vector3f point = r.pointAtParameter(t);
+        double v = point.y();
+        double u = Vector3f::dot(point - d * normal, Vector3f::cross(Vector3f::UP, normal));
         if (Vector3f::dot(normal, r.getDirection()) < 0)
-            h.set(t, this->material, normal, nullptr, material->texture->query(r.pointAtParameter(t)));
+            h.set(t, this->material, getNormal(u, v), nullptr, material->texture->getColor(u, v));
         else
-            h.set(t, this->material, -normal, nullptr, material->texture->query(r.pointAtParameter(t)));
+            h.set(t, this->material, -getNormal(u, v), nullptr, material->texture->getColor(u, v));
         return true;
+    }
+
+    Vector3f getNormal(double u, double v) {
+        if (!material->bump) return normal;
+        Vector2f grad = Vector2f::ZERO;
+        double f = material->bump->getDisturb(u, v, grad);
+        if (fabs(f) < DBL_EPSILON) return normal;
+        Vector3f uaxis = Vector3f::cross(Vector3f::UP, normal);
+        if (uaxis.squaredLength() < DBL_EPSILON) return normal;
+        return Vector3f::cross(uaxis + normal * grad[0], Vector3f::UP + normal * grad[1]);
     }
 
 protected:

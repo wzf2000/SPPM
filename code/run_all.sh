@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 ROUNDS=2500
-PHOTONS=200000
+PHOTONS=2000000
 CKPT_INTERVAL=1
 
 # If project not ready, generate cmake file.

@@ -46,6 +46,7 @@ void Renderer::render(int numRounds, int numPhotons, int ckpt_interval, std::str
         count = 0;
         fprintf(stderr, "Round %d/%d:\n", i + 1, numRounds);
         renderPerTile((Tile){(intCoord){0, 0}, (intCoord){image->Height(), image->Width()}});
+        // renderPerTile((Tile){(intCoord){110, 110}, (intCoord){111, 111}});
         if ((i + 1) % ckpt_interval == 0) {
             evaluateRadiance(i + 1);
             char filename[100];
@@ -181,7 +182,7 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
             // ++count;
             hp->p = p;
             hp->weight = weight * hit.color * ss;
-            hp->fluxLight = hp->fluxLight + hp->weight * hit.getMaterial()->emission;
+            hp->fluxLight = hp->fluxLight + hp->weight * hit.getMaterial()->emission / 250;
             hp->brdf = BRDFs[hit.getMaterial()->brdf];
             hp->norm = hit.getNormal();
         }

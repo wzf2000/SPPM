@@ -87,7 +87,7 @@ public:
         ++Renderer::count;
         if (!isnormal(mu) || !isnormal(theta) || !isnormal(t)) return false;
         if (t < tmin || t > h.getT() || mu < pCurve->range[0] || mu > pCurve->range[1]) return false;
-        h.set(t, material, normal.normalized(), bound.getCenter(), material->texture->getColor(theta / (2 * M_PI), mu));
+        h.set(t, material, normal.normalized(), bound.getCenter(), material->texture->getColor(theta / (2 * M_PI), (mu - pCurve->range[0]) / (pCurve->range[1] - pCurve->range[0])));
         return true;
     }
 
@@ -108,11 +108,15 @@ public:
         for (int i = 0; i < 20; ++i) {
             if (theta < 0.0) theta += 2 * M_PI;
             if (theta >= 2 * M_PI) theta = fmod(theta, 2 * M_PI);
-            if (mu >= 1) mu = 1.0 - DBL_EPSILON;
-            if (mu <= 0) mu = DBL_EPSILON;
+            if (mu >= pCurve->range[1]) mu = pCurve->range[1] - DBL_EPSILON;
+            if (mu <= pCurve->range[0]) mu = pCurve->range[0] + DBL_EPSILON;
             point = getPoint(theta, mu, dtheta, dmu);
             Vector3f f = r.pointAtParameter(t) - point;
             double disSquare = f.squaredLength();
+            // cerr << "Iter " << i + 1 << " t: " << t
+            //      << " theta: " << theta / (2 * M_PI) << " mu: " << mu
+            //      << " dist2: " << disSquare
+            //      << " dmu: " << dmu << " dtheta: " << dtheta << endl;
             normal = Vector3f::cross(dmu, dtheta);
             if (disSquare < 1e-4) return true;
             float D = Vector3f::dot(r.getDirection(), normal);

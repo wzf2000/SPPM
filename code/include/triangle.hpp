@@ -22,6 +22,16 @@ public:
         vertices[2] = c;
     }
 
+    void setVT(const Vector2f &_a, const Vector2f &_b, const Vector2f &_c) {
+        at = _a, bt = _b, ct = _c;
+        tSet = true;
+    }
+
+    void setVNormal(const Vector3f &_a, const Vector3f &_b, const Vector3f &_c) {
+        an = _a, bn = _b, cn = _c;
+        nSet = true;
+    }
+
     Vector3f min() {
         return ::min(vertices[0], ::min(vertices[1], vertices[2]));
     }
@@ -39,11 +49,26 @@ public:
         double gamma = Matrix3f(ray.getDirection(), E1, S).determinant() / Matrix3f(ray.getDirection(), E1, E2).determinant();
         if (beta < 0 || beta > 1 || gamma < 0 || gamma > 1 || beta + gamma > 1 || t < tmin || t > hit.getT())
             return false;
+        Vector3f point = ray.pointAtParameter(t);
+        Vector3f va = (vertices[0] - point), vb = (vertices[1] - point), vc = (vertices[2] - point);
+        double ra = Vector3f::cross(vb, vc).length();
+        double rb = Vector3f::cross(vc, va).length();
+        double rc = Vector3f::cross(va, vb).length();
+        double u = beta, v = gamma;
+        if (tSet) {
+            Vector2f uv = (ra * at + rb * bt + rc * ct) / (ra + rb + rc);
+            u = uv.x(), v = uv.y();
+        }
         if (Vector3f::dot(normal, ray.getDirection()) < 0)
-            hit.set(t, this->material, normal, par->calcCenter(), material->texture->query(ray.pointAtParameter(t)));
+            hit.set(t, this->material, getNormal(ra, rb, rc), par->calcCenter(), material->texture->getColor(u, v));
         else
-            hit.set(t, this->material, -normal, par->calcCenter(), material->texture->query(ray.pointAtParameter(t)));
+            hit.set(t, this->material, -getNormal(ra, rb, rc), par->calcCenter(), material->texture->getColor(u, v));
         return true;
+    }
+
+    Vector3f getNormal(double ra, double rb, double rc) {
+        if (!nSet) return normal;
+        return (ra * an + rb * bn + rc * cn).normalized();
     }
 
     double intersectPlane(const Ray &ray) {
@@ -67,6 +92,10 @@ public:
     Vector3f vertices[3];
     Mesh *par;
 protected:
+    Vector2f at, bt, ct;
+    Vector3f an, bn, cn;
+    bool nSet = false;
+    bool tSet = false;
 
 };
 

@@ -27,6 +27,23 @@ bool Mesh::intersect(const Ray &r, Hit &h, double tmin) {
     return kdtree->intersect(kdtree->root, r, h, tmin);
 }
 
+static std::vector<std::string> mySplit(std::string str, std::string pattern) {
+    std::string::size_type pos;
+    std::vector<std::string> ret;
+    str += pattern;
+    int size = str.size();
+
+    for (int i = 0; i < size; i++) {
+        pos = str.find(pattern, i);
+        if (pos < size) {
+            std::string s = str.substr(i, pos - i);
+            ret.emplace_back(s);
+            i = pos + pattern.size() - 1;
+        }
+    }
+    return ret;
+}
+
 Mesh::Mesh(const char *filename, Material *material, Vector3f *center) : Object3D(material), center(center) {
 
     // Optional: Use tiny obj loader to replace this simple one.
@@ -42,6 +59,7 @@ Mesh::Mesh(const char *filename, Material *material, Vector3f *center) : Object3
         std::string vTok("v");
         std::string fTok("f");
         std::string texTok("vt");
+        std::string vnTok("vn");
         char bslash = '/', space = ' ';
         std::string tok;
         int texID;
@@ -63,28 +81,28 @@ Mesh::Mesh(const char *filename, Material *material, Vector3f *center) : Object3
                 ss >> vec[0] >> vec[1] >> vec[2];
                 v.push_back(vec);
             } else if (tok == fTok) {
-                if (line.find(bslash) != std::string::npos) {
-                    std::replace(line.begin(), line.end(), bslash, space);
-                    std::stringstream facess(line);
-                    TriangleIndex trig;
-                    facess >> tok;
-                    for (int ii = 0; ii < 3; ii++) {
-                        facess >> trig[ii] >> texID;
-                        trig[ii]--;
-                    }
-                    t.push_back(trig);
-                } else {
-                    TriangleIndex trig;
-                    for (int ii = 0; ii < 3; ii++) {
-                        ss >> trig[ii];
-                        trig[ii]--;
-                    }
-                    t.push_back(trig);
+                bool tFlag = 1, nFlag = 1;
+                TriangleIndex trig, vtID, vnID;
+                for (int i = 0; i < 3; ++i) {
+                    std::string str;
+                    ss >> str;
+                    std::vector<std::string> id = mySplit(str, string(1, bslash));
+                    trig[i] = stoi(id[0]) - 1;
+                    if (id.size() > 1) vtID[i] = stoi(id[1]) - 1;
+                    if (id.size() > 2) vnID[i] = stoi(id[2]) - 1;
                 }
+                t.emplace_back(trig);
+                vtIndex.emplace_back(vtID);
+                vnIndex.emplace_back(vnID);
             } else if (tok == texTok) {
                 Vector2f texcoord;
                 ss >> texcoord[0];
                 ss >> texcoord[1];
+                vt.emplace_back(texcoord);
+            } else if (tok == vnTok) {
+                Vector3f vec;
+                ss >> vec[0] >> vec[1] >> vec[2];
+                vn.emplace_back(vec);
             }
         }
     }
@@ -108,21 +126,30 @@ Mesh::Mesh(const char *filename, Material *material, Vector3f *center) : Object3
             v.emplace_back(vec);
         }
         for (int i = 0; i < faces; ++i) {
-            TriangleIndex trig;
+            TriangleIndex trig, vtID, vnID;
             int num;
             f >> num;
             if (num != 3)
                 throw runtime_error("Only trangle are supported!");
             f >> trig[0] >> trig[1] >> trig[2];
             t.emplace_back(trig);
+            vtIndex.emplace_back(vtID);
+            vnIndex.emplace_back(vnID);
         }
     }
+    std::cerr << filename << std::endl;
     computeNormal();
 
     f.close();
     faces.clear();
-    for (auto triangleIndex : t) {
-        faces.emplace_back(new Triangle(v[triangleIndex[0]], v[triangleIndex[1]], v[triangleIndex[2]], material, this));
+    for (int i = 0; i < t.size(); ++i) {
+        TriangleIndex &triangleIndex = t[i];
+        Triangle *tr = new Triangle(v[triangleIndex[0]], v[triangleIndex[1]], v[triangleIndex[2]], material, this);
+        if (vtIndex[i][0] != -1)
+            tr->setVT(vt[vtIndex[i][0]], vt[vtIndex[i][1]], vt[vtIndex[i][2]]);
+        if (vnIndex[i][0] != -1)
+            tr->setVNormal(vn[vnIndex[i][0]], vn[vnIndex[i][1]], vn[vnIndex[i][2]]);
+        faces.emplace_back(tr);
     }
     kdtree = new ObjectKDTree(faces);
 }

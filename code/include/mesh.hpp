@@ -17,7 +17,7 @@ public:
 
     struct TriangleIndex {
         TriangleIndex() {
-            x[0] = 0; x[1] = 0; x[2] = 0;
+            x[0] = x[1] = x[2] = -1;
         }
         int &operator[](const int i) { return x[i]; }
         // By Computer Graphics convention, counterclockwise winding is front face
@@ -25,9 +25,11 @@ public:
     };
 
     std::vector<Vector3f> v;
-    std::vector<TriangleIndex> t;
+    std::vector<TriangleIndex> t, vtIndex, vnIndex;
     std::vector<Vector3f> n;
     std::vector<Triangle*> faces;
+    std::vector<Vector2f> vt;
+    std::vector<Vector3f> vn;
     ObjectKDTree *kdtree;
     Vector3f *center = nullptr;
     Vector3f *calcCenter();

@@ -49,8 +49,7 @@ public:
     PerspectiveCamera(const Vector3f &center, const Vector3f &direction,
             const Vector3f &up, int imgW, int imgH, double angle1, double angle2, double f = 1, double aperture = 0) : Camera(center, direction, up, imgW, imgH), focalLength(f), aperture(aperture) {
         // angle is in radian.
-        fy = (double) height / (2 * tan(angle1 / 2));
-        fx = (double) width / (2 * tan(angle2 / 2));
+        fx = fy = (double) height / (2 * tan(angle1 / 2));
         cx = width / 2.0f;
         cy = height / 2.0f;
     }

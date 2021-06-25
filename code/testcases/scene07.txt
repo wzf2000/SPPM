@@ -1,0 +1,104 @@
+PerspectiveCamera {
+    center 0 3 10 
+    direction 0 -3 -10
+    up 0 1 0
+    angle1 38
+    angle2 38
+    width 800
+    height 800
+}
+
+Background {
+    color 0 0 0 
+}
+
+Materials {
+    numMaterials 9
+    Material { 
+        color 0.9 0.8 0.8
+        BRDF 6
+        texture texture/kamen.bmp 0 0 0 0 0 0 0 0
+        bump texture/kamen-bump.bmp
+    }
+    Material {
+        color 0.1 1 0.1 
+        BRDF 6
+    }
+    Material {
+        color 0.1 0.1 1 
+        BRDF 6
+    }
+    Material { 
+        color 0.6 0.6 0.6 
+        BRDF 6
+    }
+    Material { 
+        color 1 1 1
+        BRDF 6
+        emission 625 625 625
+    }
+    Material { 
+        color 0.5 0.5 0.5 
+        BRDF 6
+    }
+    Material { 
+        color 1 1 1
+        BRDF 10
+    }
+    Material { 
+        color 1 1 1
+        BRDF 6
+        emission 250 250 250
+    }
+    Material { 
+        color 0.95 0.94 0.94
+        BRDF 1
+    }
+}
+
+Group {
+    numObjects 9
+    MaterialIndex 0
+    Sphere {
+        center 0 0 0
+        radius 1.8 
+    }
+    MaterialIndex 3
+    Plane {
+	    normal 0 0 -1
+        offset -11
+    }
+    Plane {
+	normal 0 -1 0
+        offset -4
+    }
+    MaterialIndex 7
+    Sphere {
+	    center 0 6 0 
+        radius 2.5 
+    }
+    MaterialIndex 4
+    Sphere {
+	    center 0 0 20 
+        radius 9.5 
+    }
+    MaterialIndex 5
+    Plane {
+	    normal 0 0 1
+        offset -2
+    }
+    MaterialIndex 8
+    Plane {
+	    normal 0 1 0
+        offset -2
+    }
+    Plane {
+	    normal -1 0 0
+        offset -2
+    }
+    Plane {
+	    normal 1 0 0
+        offset -2
+    }
+}
+

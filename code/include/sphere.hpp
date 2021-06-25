@@ -27,19 +27,35 @@ public:
             double t_prime = sqrt(radius * radius - d_square);
             double t = inside ? t_p + t_prime : t_p - t_prime;
             if (t > h.getT() || t < tmin) return false;
-            Vector3f n = (r.getOrigin() + t * r.getDirection()) - center;
+            Vector3f n = r.pointAtParameter(t) - center;
             n *= inside ? -1 : 1;
             n.normalize();
-            h.set(t, this->material, n, &center, material->texture->query(r.pointAtParameter(t)));
+            double u = 0.5 + atan2(n.x(), n.z()) / (2 * M_PI);
+            double v = 0.5 - asin(n.y()) / M_PI;
+            h.set(t, this->material, getNormal(n, r.pointAtParameter(t) - center, u, v), &center, material->texture->getColor(u, v));
         } else {
             double t_p = Vector3f::dot(l, r.getDirection());
             if (t_p <= 0) return false;
             double t = 2 * t_p;
             Vector3f n = center - (r.getOrigin() + t * r.getDirection());
             n.normalize();
-            h.set(t, this->material, n, &center, material->texture->query(r.pointAtParameter(t)));
+            double u = 0.5 + atan2(n.x(), n.z()) / (2 * M_PI);
+            double v = 0.5 - asin(n.y()) / M_PI;
+            h.set(t, this->material, getNormal(n, r.pointAtParameter(t) - center, u, v), &center, material->texture->getColor(u, v));
         }
         return true;
+    }
+
+    Vector3f getNormal(const Vector3f &n, const Vector3f &p, double u, double v) {
+        if (!material->bump) return n;
+        Vector2f grad = Vector2f::ZERO;
+        double f = material->bump->getDisturb(u, v, grad);
+        if (fabs(f) < DBL_EPSILON) return n;
+        double phi = u * 2 * M_PI, theta = M_PI * (1 - v);
+        Vector3f pu(-p.z(), 0, p.x());
+        Vector3f pv(p.y() * cos(phi), -radius * sin(theta), p.y() * sin(phi));
+        if (pu.squaredLength() < DBL_EPSILON) return n;
+        return Vector3f::cross(pu + n * grad[0] / (2 * M_PI), pv + n * grad[1] / M_PI);
     }
 
     bool intersect_media(const Ray &r, double &t_near, double &t_far) {

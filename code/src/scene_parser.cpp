@@ -300,19 +300,18 @@ void SceneParser::parseMaterials() {
 Material *SceneParser::parseMaterial() {
     char token[MAX_PARSER_TOKEN_LENGTH];
     char filename[MAX_PARSER_TOKEN_LENGTH];
+    char bump_filename[MAX_PARSER_TOKEN_LENGTH];
     filename[0] = 0;
     int brdf = DIFFUSE;
-    Texture *t = nullptr;
+    Texture *t = nullptr, *bump = nullptr;
     Vector3f color = Vector3f::ZERO, emission = Vector3f::ZERO;
     getToken(token);
     assert (!strcmp(token, "{"));
     while (true) {
         getToken(token);
-        if (strcmp(token, "color") == 0) {
-            // Optional: read in texture and draw it.
+        if (strcmp(token, "color") == 0 || strcmp(token, "diffuseColor") == 0) {
             color = readVector3f();
         } else if (strcmp(token, "texture") == 0) {
-            // Optional: read in texture and draw it.
             Vector3f x, y;
             double xb, yb;
             getToken(filename);
@@ -321,6 +320,9 @@ Material *SceneParser::parseMaterial() {
             y = readVector3f();
             yb = readDouble();
             t = new Texture(filename, x, xb, y, yb);
+        } else if (strcmp(token, "bump") == 0) {
+            getToken(bump_filename);
+            bump = new Texture(bump_filename);
         } else if (strcmp(token, "BRDF") == 0) {
             brdf = readInt();
         } else if (strcmp(token, "emission") == 0) {
@@ -331,7 +333,7 @@ Material *SceneParser::parseMaterial() {
         }
     }
     if (!t) t = new Texture(color);
-    auto *answer = new Material(brdf, t, emission);
+    auto *answer = new Material(brdf, t, bump, emission);
     return answer;
 }
 

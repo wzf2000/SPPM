@@ -28,19 +28,19 @@ public:
             double t = inside ? t_p + t_prime : t_p - t_prime;
             if (t > h.getT() || t < tmin) return false;
             Vector3f n = r.pointAtParameter(t) - center;
-            n *= inside ? -1 : 1;
             n.normalize();
             double u = 0.5 + atan2(n.x(), n.z()) / (2 * M_PI);
             double v = 0.5 - asin(n.y()) / M_PI;
+            n *= inside ? -1 : 1;
             h.set(t, this->material, getNormal(n, r.pointAtParameter(t) - center, u, v), &center, material->texture->getColor(u, v));
         } else {
             double t_p = Vector3f::dot(l, r.getDirection());
             if (t_p <= 0) return false;
             double t = 2 * t_p;
-            Vector3f n = center - (r.getOrigin() + t * r.getDirection());
+            Vector3f n = center - r.pointAtParameter(t);
             n.normalize();
-            double u = 0.5 + atan2(n.x(), n.z()) / (2 * M_PI);
-            double v = 0.5 - asin(n.y()) / M_PI;
+            double u = 0.5 + atan2(-n.x(), -n.z()) / (2 * M_PI);
+            double v = 0.5 - asin(-n.y()) / M_PI;
             h.set(t, this->material, getNormal(n, r.pointAtParameter(t) - center, u, v), &center, material->texture->getColor(u, v));
         }
         return true;

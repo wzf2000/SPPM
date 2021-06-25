@@ -81,7 +81,7 @@ Vector3f Texture::getColor(double u, double v) const {
     if (u < 0) u += 1;
     if (v < 0) v += 1;
     u = u * image->Width();
-    v = (1 - v) * image->Height();
+    v = v * image->Height();
     int x = u, y = v;
     double alpha = u - x, beta = v - y;
     Vector3f ret = Vector3f::ZERO;

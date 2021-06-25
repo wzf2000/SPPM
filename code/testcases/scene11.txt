@@ -45,12 +45,12 @@ Materials {
     }
     Material {
         color 1 1 1
-        emission 37500 37500 37500
+        emission 375000 375000 375000
         BRDF 6
     }
     Material {
         color 1 1 1
-        emission 75000 75000 75000
+        emission 750000 750000 750000
         BRDF 6
     }
 }

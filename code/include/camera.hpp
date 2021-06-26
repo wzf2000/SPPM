@@ -47,7 +47,7 @@ class PerspectiveCamera : public Camera {
 
 public:
     PerspectiveCamera(const Vector3f &center, const Vector3f &direction,
-            const Vector3f &up, int imgW, int imgH, double angle1, double angle2, double f = 1, double aperture = 0) : Camera(center, direction, up, imgW, imgH), focalLength(f), aperture(aperture) {
+            const Vector3f &up, int imgW, int imgH, double angle1, double angle2, double f = 1, double aperture = 0) : Camera(center, direction, up, imgW, imgH), focus(f), aperture(aperture) {
         // angle is in radian.
         fx = fy = (double) height / (2 * tan(angle1 / 2));
         cx = width / 2.0f;
@@ -55,10 +55,10 @@ public:
     }
 
     Ray generateRay(const Vector2f &point) override {
-        double csx = (point.x() - cx) / fx * focalLength;
-        double csy = (point.y() - cy) / fy * focalLength;
+        double csx = (point.x() - cx) / fx * focus;
+        double csy = (point.y() - cy) / fy * focus;
         double dx = Math::random(-1, 1) * aperture, dy = Math::random(-1, 1) * aperture;
-        Vector3f dir(csx - dx, -csy - dy, focalLength);
+        Vector3f dir(csx - dx, -csy - dy, focus);
         Matrix3f R(this->horizontal, -this->up, this->direction);
         dir = R * dir;
         Ray ray(this->center + horizontal * dx - up * dy, dir);
@@ -74,7 +74,7 @@ public:
 private:
     double fx, fy;
     double cx, cy;
-    double aperture, focalLength;
+    double aperture, focus;
 
 };
 

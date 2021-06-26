@@ -10,7 +10,7 @@
 #include "mesh.hpp"
 #include <utility>
 
-#ifdef VOLUMETRIC_OPEN
+#ifndef VOLUMETRIC_OPEN
 #define VOLUMETRIC 1
 #else
 #define VOLUMETRIC 0
@@ -18,7 +18,7 @@
 
 int Renderer::count = 0;
 
-Renderer::Renderer(SceneParser *scene) : scene(scene), kdtree(nullptr), media(new Sphere(Vector3f(2, 2, 3), 10, new Material)) {
+Renderer::Renderer(SceneParser *scene) : scene(scene), kdtree(nullptr), media(new Sphere(Vector3f(0, 0, 0), 5, new Material)) {
     camera = scene->getCamera();
     image = new Image(camera->getWidth(), camera->getHeight());
     for (int i = 0; i < image->Width(); ++i)
@@ -121,7 +121,7 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
     double scale = 1.0;
     double absorption = 1.0;
     Group *group = scene->getGroup();
-    if (VOLUMETRIC) {
+    if (VOLUMETRIC && hp) {
         bool flag_media = media->intersect_media(ray, t_near, t_far);
         if (flag_media) {
             Ray *scatter_ray;
@@ -137,10 +137,11 @@ void Renderer::trace(const Ray &ray, const Vector3f &weight, int depth, HitPoint
                     delete scatter_ray;
                     return;
                 }
+                scale = 1.0;
             }
             else {
                 if (!group->intersect(ray, hh, 0)) {
-                    if (hp) hp->fluxLight += hp->weight * scene->getBackgroundColor();
+                    hp->fluxLight += hp->weight * scene->getBackgroundColor();
                     delete scatter_ray;
                     return;
                 }

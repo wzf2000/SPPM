@@ -1,12 +1,13 @@
-
-FixedCamera {
-    center 0 0 -1
-    fx 0.684
-    fy 0.811
-    aperture 0.001
-    focus 1.09
+PerspectiveCamera {
+    center -0.5 0 0.2
+    direction 5 0 1
+    up 0 1 0
+    angle1 60
+    angle2 60
     width 1024
     height 768
+    aperture 0.001
+    focus 1.09
 }
 
 Materials {
@@ -24,18 +25,18 @@ Materials {
         color 1 1 1
     }
     Material {
-        BRDF 3
-        emission 2.5 2.5 2.5
+        BRDF 4
+        emission 100 100 100
         color 1 1 1
     }
     Material {
-        BRDF 3
-        emission 2.5 2.5 2.5
-        color 0.1 0.8 0.8
+        BRDF 4
+        emission 1 1 1
+        color 1 1 1
     }
     Material {
-        BRDF 4
-        texture obj/back.ppm 0 -1 0 0.5 0.8333333 0 0 0.5
+        BRDF 6
+        color 0.8 0.8 0.8
     }
     Material {
         BRDF 5
@@ -76,7 +77,7 @@ Background {
 }
 
 Group {
-    numObjects 11
+    numObjects 9
     MaterialIndex 0
     Transform {
         UniformScale 0.5
@@ -88,7 +89,7 @@ Group {
     Transform {
         UniformScale 0.5
         TriangleMesh {
-            obj_file obj/back.obj
+            obj_file obj/back-window.obj
         }
     }
     MaterialIndex 6
@@ -119,14 +120,19 @@ Group {
             obj_file obj/right.obj
         }
     }
-    MaterialIndex 0
-    Sphere {
-        center -0.16 -0.15 0.3
-        radius 0.1
-    }
     MaterialIndex 3
     Sphere {
-        center 0.22 0.10 0
+        center 0.25 0.5 0.85
+        radius 0.05
+    }
+    MaterialIndex 4
+    Sphere {
+        center 0.25 0.25 -1
+        radius 0.05
+    }
+    MaterialIndex 5
+    Sphere {
+        center 0.25 0 0.6
         radius 0.1
     }
-
+}

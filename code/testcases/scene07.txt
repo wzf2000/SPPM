@@ -17,8 +17,7 @@ Materials {
     Material { 
         color 0.9 0.8 0.8
         BRDF 6
-        texture texture/kamen.bmp 0 0 0 0 0 0 0 0
-        bump texture/kamen-bump.bmp
+        bump texture/rope2.jpg
     }
     Material {
         color 0.1 1 0.1 

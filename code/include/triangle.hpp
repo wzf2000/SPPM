@@ -15,7 +15,7 @@ public:
 
     // a b c are three vertex positions of the triangle
     Triangle( const Vector3f& a, const Vector3f& b, const Vector3f& c, Material* m, Mesh *par = nullptr) : Object3D(m), par(par) {
-        normal = Vector3f::cross(a - b, a - c);
+        normal = Vector3f::cross(b - a, c - a);
         normal.normalize();
         vertices[0] = a;
         vertices[1] = b;
@@ -57,7 +57,7 @@ public:
         double u = beta, v = gamma;
         if (tSet) {
             Vector2f uv = (ra * at + rb * bt + rc * ct) / (ra + rb + rc);
-            u = uv.x(), v = uv.y();
+            u = uv.x(), v = 1 - uv.y();
         }
         if (Vector3f::dot(normal, ray.getDirection()) < 0)
             hit.set(t, this->material, getNormal(ra, rb, rc), par->calcCenter(), material->texture->getColor(u, v));

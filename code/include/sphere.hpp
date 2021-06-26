@@ -51,11 +51,11 @@ public:
         Vector2f grad = Vector2f::ZERO;
         double f = material->bump->getDisturb(u, v, grad);
         if (fabs(f) < DBL_EPSILON) return n;
-        double phi = u * 2 * M_PI, theta = M_PI * (1 - v);
+        double phi = u * 2 * M_PI, theta = M_PI * v;
         Vector3f pu(-p.z(), 0, p.x());
         Vector3f pv(p.y() * cos(phi), -radius * sin(theta), p.y() * sin(phi));
         if (pu.squaredLength() < DBL_EPSILON) return n;
-        return Vector3f::cross(pu + n * grad[0] / (2 * M_PI), pv + n * grad[1] / M_PI);
+        return Vector3f::cross(pu + n * grad[0] / (2 * M_PI), pv + n * grad[1] / M_PI).normalized();
     }
 
     bool intersect_media(const Ray &r, double &t_near, double &t_far) {

@@ -16,12 +16,12 @@ Materials {
     numMaterials 8
     Material {
 	    color 1 0.8 1
-	    BRDF 15
+	    BRDF 11
         texture texture/vase.png 0 0 0 0 0 0 0 0
 	}
     Material {
         color 0.9 0.9 0.9
-        emission 1000 1000 1000
+        emission 500 500 500
         BRDF 6
     }
     Material {
@@ -34,7 +34,7 @@ Materials {
     }
     Material {
         color 1 1 1
-        emission 1000 1000 1000
+        emission 500 500 500
         BRDF 1
     }
     Material {

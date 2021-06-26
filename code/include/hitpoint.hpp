@@ -4,7 +4,7 @@
 #include "hit.hpp"
 #include "brdf.hpp"
 
-#define INIT_R2 1e-5
+#define INIT_R2 1e-3
 
 class HitPoint {
 public:

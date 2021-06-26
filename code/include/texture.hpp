@@ -9,6 +9,7 @@ class Texture {
     Vector3f color;
     Vector3f x, y;
     double xb, yb;
+    std::string name;
 
 public:
     Texture(char *filename, Vector3f x, double xb, Vector3f y, double yb);

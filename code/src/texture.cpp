@@ -3,10 +3,12 @@
 #include "stb_image.h"
 
 Texture::Texture(char *filename, Vector3f x, double xb, Vector3f y, double yb) {
+    name = filename;
     int len = strlen(filename);
+    int c;
+    int width, height;
     if (strcmp(".ppm", filename + len - 4) == 0) {
         FILE *file = fopen(filename, "r");
-        int width, height;
         fscanf(file, "%*s%d%d%*d", &width, &height);
         image = new Image(width, height);
         for (int i = 0; i < height; ++i) {
@@ -19,14 +21,12 @@ Texture::Texture(char *filename, Vector3f x, double xb, Vector3f y, double yb) {
         fclose(file);
     }
     else {
-        int c;
-        int width, height;
         unsigned char *pic = stbi_load(filename, &width, &height, &c, 0);
         image = new Image(width, height);
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
                 int index = i * width * c + j * c;
-                int r = pic[index], g = pic[index] + 1, b = pic[index + 2];
+                int r = pic[index], g = pic[index + 1], b = pic[index + 2];
                 image->SetPixel(j, i, Vector3f(r / 255., g / 255., b / 255.));
             }
         }
@@ -35,10 +35,11 @@ Texture::Texture(char *filename, Vector3f x, double xb, Vector3f y, double yb) {
     this->xb = xb;
     this->y = y;
     this->yb = yb;
-    std::cerr << filename << std::endl;
+    std::cerr << filename << " width = " << width << " height = " << height << " color = " << c << std::endl;
 }
 
 Texture::Texture(char *filename) {
+    name = filename;
     int c;
     int width, height;
     unsigned char *pic = stbi_load(filename, &width, &height, &c, 0);
@@ -50,7 +51,7 @@ Texture::Texture(char *filename) {
             image->SetPixel(j, i, Vector3f(r / 255., g / 255., b / 255.));
         }
     }
-    std::cerr << filename << std::endl;
+    std::cerr << filename << " width = " << width << " height = " << height << " color = " << c << std::endl;
 }
 
 Texture::Texture(Vector3f color) {
@@ -102,7 +103,5 @@ double Texture::getDisturb(double u, double v, Vector2f &grad) const {
 }
 
 double Texture::getGray(double x, double y) const {
-    int pw = int(x * image->Width() + image->Width()) % image->Width();
-    int ph = int(y * image->Height() + image->Height()) % image->Height();
-    return (Vector3f::dot(image->GetPixel(pw, ph), Vector3f(1. / 3.)) - 0.5) * 2;
+    return (Vector3f::dot(getColor(x, y), Vector3f(1. / 3.)) - 0.5) * 2;
 }

@@ -1,6 +1,10 @@
 code/bin/
 code/build/
 code/checkpoints/
+report/**
+!report/report.pdf
+!report/report.tex
+!report/*.bmp
 CMakeCache.txt
 CMakeFiles
 Makefile

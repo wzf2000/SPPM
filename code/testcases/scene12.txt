@@ -1,0 +1,132 @@
+
+FixedCamera {
+    center 0 0 -1
+    fx 0.684
+    fy 0.811
+    aperture 0.001
+    focus 1.09
+    width 1024
+    height 768
+}
+
+Materials {
+    numMaterials 14
+    Material {
+        BRDF 0
+        texture obj/top.ppm 0 0 0.5 0.625 0.8333333 0 0 0.5
+    }
+    Material {
+        BRDF 1
+        color 1 1 1
+    }
+    Material {
+        BRDF 2
+        color 1 1 1
+    }
+    Material {
+        BRDF 3
+        emission 2.5 2.5 2.5
+        color 1 1 1
+    }
+    Material {
+        BRDF 3
+        emission 2.5 2.5 2.5
+        color 0.1 0.8 0.8
+    }
+    Material {
+        BRDF 4
+        texture obj/back.ppm 0 -1 0 0.5 0.8333333 0 0 0.5
+    }
+    Material {
+        BRDF 5
+        texture obj/bottom.ppm 0 0 0.5 0.625 0.8333333 0 0 0.5
+    }
+    Material {
+        BRDF 6
+        color 0.8 0.2 0.2
+    }
+    Material {
+        BRDF 6
+        color 0.2 0.5 0.8
+    }
+    Material {
+        BRDF 6
+        color 0.2 0.8 0.5
+    }
+    Material {
+        BRDF 7
+        color 1 1 1
+    }
+    Material {
+        BRDF 8
+        color 0.4 0.8 0.8
+    }
+    Material {
+        BRDF 9
+        color 1 1 1
+    }
+    Material {
+        BRDF 10
+        color 0.1 0.8 0.8
+    }
+}
+
+Background {
+    color 0 0 0 
+}
+
+Group {
+    numObjects 11
+    MaterialIndex 0
+    Transform {
+        UniformScale 0.5
+        TriangleMesh {
+            obj_file obj/top.obj
+        }
+    }
+    MaterialIndex 5
+    Transform {
+        UniformScale 0.5
+        TriangleMesh {
+            obj_file obj/back.obj
+        }
+    }
+    MaterialIndex 6
+    Transform {
+        UniformScale 0.5
+        TriangleMesh {
+            obj_file obj/bottom.obj
+        }
+    }
+    MaterialIndex 7
+    Transform {
+        UniformScale 0.5
+        TriangleMesh {
+            obj_file obj/front.obj
+        }
+    }
+    MaterialIndex 8
+    Transform {
+        UniformScale 0.5
+        TriangleMesh {
+            obj_file obj/left.obj
+        }
+    }
+    MaterialIndex 9
+    Transform {
+        UniformScale 0.5
+        TriangleMesh {
+            obj_file obj/right.obj
+        }
+    }
+    MaterialIndex 0
+    Sphere {
+        center -0.16 -0.15 0.3
+        radius 0.1
+    }
+    MaterialIndex 3
+    Sphere {
+        center 0.22 0.10 0
+        radius 0.1
+    }
+

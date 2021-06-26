@@ -14,7 +14,7 @@ Materials {
     numMaterials 14
     Material {
         BRDF 0
-        texture obj/top.ppm 0 0 0.5 0.625 0.8333333 0 0 0.5
+        texture mesh/objtop.ppm 0 0 0.5 0.625 0.8333333 0 0 0.5
     }
     Material {
         BRDF 1

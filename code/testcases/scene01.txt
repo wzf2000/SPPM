@@ -23,7 +23,7 @@ Materials {
     numMaterials 14
     Material {
         BRDF 0
-        texture obj/top.ppm 0 0 0.5 0.625 0.8333333 0 0 0.5
+        texture mesh/objtop.ppm 0 0 0.5 0.625 0.8333333 0 0 0.5
     }
     Material {
         BRDF 1
@@ -45,11 +45,11 @@ Materials {
     }
     Material {
         BRDF 4
-        texture obj/back.ppm 0 -1 0 0.5 0.8333333 0 0 0.5
+        texture mesh/objback.ppm 0 -1 0 0.5 0.8333333 0 0 0.5
     }
     Material {
         BRDF 5
-        texture obj/bottom.ppm 0 0 0.5 0.625 0.8333333 0 0 0.5
+        texture mesh/objbottom.ppm 0 0 0.5 0.625 0.8333333 0 0 0.5
     }
     Material {
         BRDF 6
@@ -91,42 +91,42 @@ Group {
     Transform {
         UniformScale 0.5
         TriangleMesh {
-            obj_file obj/top.obj
+            obj_file mesh/objtop.obj
         }
     }
     MaterialIndex 5
     Transform {
         UniformScale 0.5
         TriangleMesh {
-            obj_file obj/back.obj
+            obj_file mesh/objback.obj
         }
     }
     MaterialIndex 6
     Transform {
         UniformScale 0.5
         TriangleMesh {
-            obj_file obj/bottom.obj
+            obj_file mesh/objbottom.obj
         }
     }
     MaterialIndex 7
     Transform {
         UniformScale 0.5
         TriangleMesh {
-            obj_file obj/front.obj
+            obj_file mesh/objfront.obj
         }
     }
     MaterialIndex 8
     Transform {
         UniformScale 0.5
         TriangleMesh {
-            obj_file obj/left.obj
+            obj_file mesh/objleft.obj
         }
     }
     MaterialIndex 9
     Transform {
         UniformScale 0.5
         TriangleMesh {
-            obj_file obj/right.obj
+            obj_file mesh/objright.obj
         }
     }
     MaterialIndex 11
@@ -135,7 +135,7 @@ Group {
         Translate 0.24 -0.59 0.12
         Scale 2.8 2.8 -2.8
         TriangleMesh {
-            obj_file obj/bunny.fine.obj
+            obj_file mesh/objbunny.fine.obj
         }
     }
     MaterialIndex 12
@@ -143,7 +143,7 @@ Group {
         Translate -0.6 -0.23731 -0.44902
         Scale 0.217 0.2359 0.2144
         TriangleMesh {
-            obj_file obj/water.ply
+            obj_file mesh/objwater.ply
             center 0 -1 0
         }
     }
